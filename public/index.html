@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>如果我是古人 — 穿越千年，遇见另一个自己</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&family=Noto+Serif+SC:wght@400;700&family=LXGW+WenKai&display=swap" rel="stylesheet">
+<style>
+/* 墨韵流觞 — 如果我是古人 视觉系统 */
+:root {
+  --ink-deep: #2c2c2c;
+  --ink-medium: #555;
+  --ink-light: #999;
+  --rice-paper: #f8f6f2;
+  --rice-warm: #f0ece6;
+  --vermilion: #c23b22;
+  --jade: #4a8c6a;
+  --gold: #b8a060;
+  --font-display: 'Zhi Mang Xing', cursive;
+  --font-body: 'LXGW WenKai', 'Noto Serif SC', serif;
+  --font-caption: 'LXGW WenKai', serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 18px; }
+
+body {
+  font-family: var(--font-body);
+  background: #F7F0E6;
+  color: var(--ink-deep);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(194,59,34,0.015) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(74,140,106,0.01) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── 欢迎页 ── */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: #F7F0E6;
+  cursor: default;
+  transition: opacity 1.2s ease, visibility 1.2s ease;
+  overflow: hidden;
+}
+.splash.fade-out { opacity: 0; visibility: hidden; }
+
+#splashCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* 文字浮于山水之上，整体偏上 */
+.splash-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 18vh;
+  z-index: 2;
+  pointer-events: none;
+  text-align: center;
+}
+
+.splash-title {
+  font-family: var(--font-display);
+  font-size: 6.5rem;
+  color: var(--ink-deep);
+  letter-spacing: 0.2em;
+  opacity: 0;
+  animation: brushIn 1.8s cubic-bezier(0.22,1,0.36,1) forwards 0.4s;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 20px rgba(247,240,230,0.6);
+}
+
+.splash-sub {
+  font-family: var(--font-caption);
+  font-size: 1.3rem;
+  color: var(--ink-medium);
+  letter-spacing: 0.3em;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards 1.2s;
+  margin-bottom: 40px;
+}
+
+.splash-desc {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: var(--ink-light);
+  letter-spacing: 0.04em;
+  line-height: 2;
+  max-width: 440px;
+  text-align: center;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards 1.5s;
+}
+
+/* 按钮固定在底部 */
+.splash-enter {
+  position: absolute;
+  bottom: 12vh;
+  left: 0;
+  right: 0;
+  text-align: center;
+  pointer-events: auto;
+  opacity: 0;
+  animation: fadeUp 0.8s ease forwards 2s;
+}
+
+.splash-enter-btn {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  letter-spacing: 0.5em;
+  color: var(--ink-deep);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.3s;
+  opacity: 0.7;
+}
+.splash-enter-btn:hover {
+  opacity: 1;
+}
+
+@keyframes brushIn {
+  0%   { opacity: 0; transform: scaleX(0.03); filter: blur(6px); }
+  40%  { opacity: 0.6; transform: scaleX(0.85); filter: blur(1px); }
+  70%  { opacity: 1; transform: scaleX(1.02); filter: blur(0); }
+  100% { opacity: 1; transform: scaleX(1); filter: blur(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── 飘落诗词 ── */
+.poetry-rain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.poetry-line {
+  position: absolute;
+  font-family: var(--font-caption);
+  font-size: 0.95rem;
+  color: rgba(0,0,0,0.25);
+  white-space: nowrap;
+  animation: poetryFall linear forwards;
+  writing-mode: vertical-rl;
+  letter-spacing: 0.5em;
+  line-height: 1.6;
+}
+@keyframes poetryFall {
+  from { transform: translateY(-100%); opacity: 0; }
+  8%   { opacity: 1; }
+  85%  { opacity: 0.7; }
+  to   { transform: translateY(110vh); opacity: 0; }
+}
+
+/* ── 主容器 ── */
+.container {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 24px 100px;
+}
+
+/* ── 标题区 ── */
+.header {
+  text-align: center;
+  padding: 48px 0 32px;
+  position: relative;
+}
+.header::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: rgba(0,0,0,0.12);
+  margin: 20px auto 0;
+}
+.title {
+  font-family: var(--font-display);
+  font-size: 4.2rem;
+  color: var(--ink-deep);
+  letter-spacing: 0.15em;
+  line-height: 1.3;
+}
+.subtitle {
+  font-family: var(--font-caption);
+  font-size: 1.2rem;
+  color: var(--ink-light);
+  margin-top: 12px;
+  letter-spacing: 0.3em;
+}
+
+/* 诗词展示 */
+.header-poetry {
+  margin-top: 24px;
+  padding: 12px 0;
+  text-align: center;
+}
+.header-poetry .poetry-text {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--ink-medium);
+  letter-spacing: 0.08em;
+  line-height: 1.9;
+}
+.header-poetry .poetry-info {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  margin-top: 6px;
+  opacity: 0.6;
+}
+
+/* ── 输入卡片 ── */
+.input-card {
+  background: #f5f0e8;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 12px;
+  padding: 40px 36px;
+  position: relative;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+.form-group { margin-bottom: 24px; }
+.form-label {
+  display: block;
+  font-family: var(--font-caption);
+  font-size: 1.1rem;
+  color: var(--ink-light);
+  margin-bottom: 8px;
+  letter-spacing: 0.1em;
+}
+.form-input {
+  width: 100%;
+  padding: 14px 16px;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  color: var(--ink-deep);
+  background: rgba(245,240,232,0.6);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.3s;
+}
+.form-input:focus {
+  border-color: var(--ink-deep);
+  background: rgba(245,240,232,0.9);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
+}
+.form-input::placeholder {
+  color: rgba(0,0,0,0.25);
+  font-style: italic;
+}
+textarea.form-input {
+  resize: vertical;
+  min-height: 72px;
+  line-height: 1.8;
+}
+
+.select-row { display: flex; gap: 16px; margin-bottom: 8px; }
+.select-group { flex: 1; }
+
+.radio-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.radio-pill { position: relative; }
+.radio-pill input { position: absolute; opacity: 0; width: 0; height: 0; }
+.radio-pill label {
+  display: inline-block;
+  padding: 10px 18px;
+  font-family: var(--font-caption);
+  font-size: 0.95rem;
+  color: var(--ink-light);
+  background: rgba(245,240,232,0.6);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.radio-pill input:checked + label {
+  color: var(--ink-deep);
+  border-color: var(--ink-deep);
+  background: rgba(0,0,0,0.05);
+}
+.radio-pill label:hover { border-color: var(--ink-medium); }
+
+/* ── 自定义下拉 ── */
+.select-wrapper { position: relative; width: 100%; }
+.select-trigger {
+  width: 100%;
+  padding: 14px 16px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink-deep);
+  background: rgba(245,240,232,0.6);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.select-trigger::after {
+  content: '';
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--ink-light);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+.select-trigger.open::after { transform: rotate(180deg); }
+.select-trigger:hover, .select-trigger.open {
+  border-color: var(--ink-deep);
+  background: rgba(245,240,232,0.9);
+}
+.select-trigger .placeholder { color: rgba(0,0,0,0.25); font-style: italic; }
+
+.select-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  max-height: 260px;
+  overflow-y: auto;
+  background: #f5f0e8;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  z-index: 9999;
+  border-radius: 10px;
+  transform-origin: top center;
+}
+.select-menu.open { display: block; animation: menuSlide 0.15s ease; }
+@keyframes menuSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.select-menu::-webkit-scrollbar { width: 6px; }
+.select-menu::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); }
+.select-menu::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+
+.select-option {
+  padding: 12px 16px;
+  color: var(--ink-deep);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.select-option:last-child { border-bottom: none; }
+.select-option:hover { background: rgba(0,0,0,0.06); }
+.select-option.active { color: var(--vermilion); background: rgba(194,59,34,0.08); }
+.select-option .opt-sub { font-size: 0.82rem; color: var(--ink-light); margin-left: 8px; }
+
+/* ── 按钮 ── */
+.btn-submit {
+  display: block;
+  width: 100%;
+  padding: 20px;
+  margin-top: 32px;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  letter-spacing: 0.2em;
+  color: #f5f0e8;
+  background: #c23b22;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  box-shadow: 0 2px 8px rgba(194,59,34,0.2);
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  background: #a83220;
+  box-shadow: 0 6px 20px rgba(194,59,34,0.3);
+}
+
+.btn-submit:active { transform: translateY(0); }
+.btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* ═══════════════════════════════════════
+   结果卡片覆盖层
+   ═══════════════════════════════════════ */
+.card-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+.card-overlay.active {
+  display: flex;
+}
+
+.card-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(6px);
+}
+
+.card-overlay-content {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: overlayIn 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.overlay-loading {
+  text-align: center;
+  padding: 80px 40px;
+  background: #f5f0e8;
+  border-radius: 14px;
+  display: none;
+}
+.overlay-loading.active { display: block; }
+
+.overlay-card {
+  display: none;
+}
+.overlay-card.active { display: block; }
+
+.overlay-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(0,0,0,0.06);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.4rem;
+  color: var(--ink-medium);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10;
+  line-height: 1;
+}
+.overlay-close:hover {
+  background: rgba(0,0,0,0.12);
+  color: var(--ink-deep);
+}
+
+.overlay-card .identity-card {
+  box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 0 4px;
+}
+
+.overlay-actions .btn-action {
+  flex: 1;
+  padding: 16px 18px;
+  font-family: var(--font-caption);
+  font-size: 1.05rem;
+  letter-spacing: 0.1em;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(245,240,232,0.6);
+  color: var(--ink-medium);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.overlay-actions .btn-action:hover {
+  border-color: rgba(0,0,0,0.15);
+  background: rgba(245,240,232,0.9);
+  transform: translateY(-1px);
+}
+.overlay-actions .btn-action.primary {
+  background: #c23b22;
+  color: #f5f0e8;
+  border-color: #c23b22;
+}
+.overlay-actions .btn-action.primary:hover {
+  background: #a83220;
+}
+
+/* overlay 内滚动条 */
+.card-overlay-content::-webkit-scrollbar { width: 6px; }
+.card-overlay-content::-webkit-scrollbar-track { background: transparent; }
+.card-overlay-content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+
+@media (max-width: 600px) {
+  html { font-size: 16px; }
+  .container { padding: 20px 16px 60px; }
+  .title { font-size: 3rem; }
+  .splash-overlay { padding-top: 15vh; }
+  .splash-title { font-size: 3.8rem; letter-spacing: 0.12em; }
+  .splash-sub { font-size: 1rem; letter-spacing: 0.2em; }
+  .splash-desc { font-size: 0.95rem; padding: 0 24px; max-width: 320px; }
+  .splash-enter { bottom: 10vh; }
+  .splash-enter-btn { font-size: 2rem; }
+  .input-card, .card-content { padding: 28px 20px; }
+  .select-row { flex-direction: column; gap: 12px; }
+  .ancient-name { font-size: 2.8rem; }
+  .gallery-grid { grid-template-columns: 1fr; }
+  .actions { flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- 欢迎页 -->
+<div class="splash" id="splash">
+  <canvas id="splashCanvas"></canvas>
+  <div class="splash-overlay">
+    <div class="splash-title">如果我是古人</div>
+    <div class="splash-sub">穿越千年，遇见另一个自己</div>
+    <div class="splash-desc">写下你的性格、志趣与故事，<br>看看千年前的你，会是诗客、侠士、谋臣，还是隐者。</div>
+    <div class="splash-enter">
+      <button class="splash-enter-btn" onclick="dismissSplash()">开始</button>
+    </div>
+  </div>
+</div>
+
+<!-- 飘落诗词 -->
+<div class="poetry-rain" id="poetryRain"></div>
+
+<!-- 设置按钮 -->
+<button class="settings-toggle" onclick="toggleSettings()" title="设置">&#9881;</button>
+
+<!-- 主容器 -->
+<div class="container" id="mainContent" style="display:none">
+
+  <header class="header">
+    <h1 class="title">如果我是古人</h1>
+    <p class="subtitle">穿越千年，遇见另一个自己</p>
+    <div class="header-poetry" id="headerPoetry">
+      <div class="poetry-text" id="poetryText">加载诗词中…</div>
+      <div class="poetry-info" id="poetryInfo"></div>
+    </div>
+  </header>
+
+  <!-- 输入区 -->
+  <div class="input-card" id="inputSection">
+    <div class="form-group">
+      <label class="form-label">你的性格</label>
+      <div class="select-wrapper" id="personalityDropdown"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">你的爱好</label>
+      <div class="select-wrapper" id="hobbiesDropdown"></div>
+    </div>
+    <div class="select-row">
+      <div class="select-group">
+        <label class="form-label">MBTI（可选）</label>
+        <div class="select-wrapper" id="mbtiDropdown"></div>
+      </div>
+      <div class="select-group">
+        <label class="form-label">星座（可选）</label>
+        <div class="select-wrapper" id="zodiacDropdown"></div>
+      </div>
+      <div class="select-group">
+        <label class="form-label">生肖（可选）</label>
+        <div class="select-wrapper" id="chineseZodiacDropdown"></div>
+      </div>
+    </div>
+    <div class="select-row">
+      <div class="select-group">
+        <label class="form-label">性别偏好</label>
+        <div class="radio-pills">
+          <div class="radio-pill"><input type="radio" name="gender" id="g-any" value="不限" checked><label for="g-any">不限</label></div>
+          <div class="radio-pill"><input type="radio" name="gender" id="g-male" value="男"><label for="g-male">男</label></div>
+          <div class="radio-pill"><input type="radio" name="gender" id="g-female" value="女"><label for="g-female">女</label></div>
+        </div>
+      </div>
+      <div class="select-group">
+        <label class="form-label">时代偏好</label>
+        <div class="radio-pills">
+          <div class="radio-pill"><input type="radio" name="era" id="e-any" value="不限" checked><label for="e-any">不限</label></div>
+          <div class="radio-pill"><input type="radio" name="era" id="e-pre" value="先秦"><label for="e-pre">先秦</label></div>
+          <div class="radio-pill"><input type="radio" name="era" id="e-tang" value="唐宋"><label for="e-tang">唐宋</label></div>
+          <div class="radio-pill"><input type="radio" name="era" id="e-ming" value="明清"><label for="e-ming">明清</label></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-submit" id="submitBtn" onclick="generate()">落笔生花</button>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+
+  <!-- 历史画廊 -->
+  <div class="gallery-section" id="gallerySection">
+    <div class="gallery-header">
+      <div class="gallery-title">古人画廊</div>
+      <div class="gallery-count" id="galleryCount"></div>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+
+  <footer class="footer">
+    <div>候鸟AI创造局 · 如果我是古人</div>
+  </footer>
+</div>
+
+<!-- 结果卡片覆盖层 -->
+<div class="card-overlay" id="cardOverlay">
+  <div class="card-overlay-backdrop" onclick="closeOverlay()"></div>
+  <div class="card-overlay-content">
+    <!-- Loading -->
+    <div class="overlay-loading" id="loading">
+      <div class="ink-grind"></div>
+      <p class="loading-text">落笔生花中…</p>
+    </div>
+    <!-- 结果卡片 -->
+    <div class="overlay-card" id="overlayCard">
+      <button class="overlay-close" onclick="closeOverlay()" title="关闭">&times;</button>
+      <div class="identity-card" id="identityCard">
+        <div class="card-content">
+          <div class="ancient-name-section">
+            <div class="ancient-name" id="ancientName"></div>
+            <div class="name-origin" id="nameOrigin"></div>
+          </div>
+          <div class="biography-section">
+            <div class="section-label">人物小传</div>
+            <div class="biography" id="biography"></div>
+          </div>
+          <div class="friend-section">
+            <div class="section-label">古人知己</div>
+            <div class="friend-name" id="friendName"></div>
+            <div class="friend-era" id="friendEra"></div>
+            <div class="friend-stage" id="friendStage"></div>
+            <div class="friend-story" id="friendStory"></div>
+            <div class="friend-reason" id="friendReason"></div>
+          </div>
+          <div class="scene-section" id="sceneSection">
+            <div class="section-label">相遇那一刻</div>
+            <div class="scene-text" id="sceneText"></div>
+          </div>
+          <div class="quote-section">
+            <div class="friend-quote" id="friendQuote"></div>
+          </div>
+        </div>
+      </div>
+      <div class="overlay-actions">
+        <button class="btn-action" onclick="closeOverlay()">关闭</button>
+        <button class="btn-action primary" onclick="generateShareCard()">保存名帖</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<canvas id="shareCanvas" width="1080" height="1440"></canvas>
+
+<script>
+/* ── 欢迎页 Canvas 山水 ── */
+(function initSplashCanvas() {
+  const canvas = document.getElementById('splashCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, t = 0;
+
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function smoothPath(pts) {
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1];
+      const [x1, y1] = pts[i];
+      ctx.quadraticCurveTo(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
+    }
+    const [lx, ly] = pts[pts.length - 1];
+    ctx.lineTo(lx, ly);
+  }
+
+  function drawMountainLine(pts, color, width) {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    smoothPath(pts);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawMountainFill(pts, color) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0], pts[0][1]);
+    for (let i = 1; i < pts.length; i++) {
+      const [x0, y0] = pts[i - 1];
+      const [x1, y1] = pts[i];
+      ctx.quadraticCurveTo(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
+    }
+    const [lx, ly] = pts[pts.length - 1];
+    ctx.lineTo(lx, ly);
+    ctx.lineTo(W, H);
+    ctx.lineTo(0, H);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawMist(cx, cy, rx, ry, opacity) {
+    ctx.save();
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rx);
+    g.addColorStop(0, `rgba(247,240,230,${opacity})`);
+    g.addColorStop(0.6, `rgba(247,240,230,${opacity * 0.3})`);
+    g.addColorStop(1, 'rgba(247,240,230,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // 飞鸟系统
+  const birds = [];
+  function spawnBird() {
+    const goRight = Math.random() > 0.5;
+    birds.push({
+      x: goRight ? -20 : W + 20,
+      y: H * (0.15 + Math.random() * 0.45),
+      vx: goRight ? (0.4 + Math.random() * 0.6) : -(0.4 + Math.random() * 0.6),
+      vy: (Math.random() - 0.5) * 0.15,
+      size: 5 + Math.random() * 8,
+      wingPhase: Math.random() * Math.PI * 2,
+      wingSpeed: 0.08 + Math.random() * 0.06,
+    });
+  }
+
+  function drawBirds() {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+    ctx.lineWidth = 1;
+    ctx.lineCap = 'round';
+
+    for (let i = birds.length - 1; i >= 0; i--) {
+      const b = birds[i];
+      b.x += b.vx;
+      b.y += b.vy + Math.sin(t * 0.01 + b.wingPhase) * 0.1;
+      b.wingPhase += b.wingSpeed;
+
+      // 超出画面则移除
+      if (b.x < -40 || b.x > W + 40) {
+        birds.splice(i, 1);
+        continue;
+      }
+
+      // 翅膀扇动 — 更像鸟的双翼
+      const wing = Math.sin(b.wingPhase) * b.size * 0.8;
+      ctx.beginPath();
+      // 左翼
+      ctx.moveTo(b.x - b.size * 1.2, b.y + wing * 0.8);
+      ctx.quadraticCurveTo(b.x - b.size * 0.5, b.y - wing * 0.3, b.x, b.y);
+      // 右翼
+      ctx.quadraticCurveTo(b.x + b.size * 0.5, b.y - wing * 0.3, b.x + b.size * 1.2, b.y + wing * 0.8);
+      ctx.stroke();
+    }
+
+    // 保持鸟的数量
+    while (birds.length < 5) spawnBird();
+
+    ctx.restore();
+  }
+
+  function draw() {
+    t++;
+    ctx.clearRect(0, 0, W, H);
+
+    // 呼吸因子：整个画面明暗缓慢起伏
+    const breath = Math.sin(t * 0.004) * 0.15; // -0.15 ~ +0.15
+    const breathSlow = Math.sin(t * 0.002 + 1) * 0.1;
+
+    // 远山层（最淡，最高）
+    const far1 = [[0, H*0.55], [W*0.15, H*0.52 + Math.sin(t*0.003)*2], [W*0.3, H*0.56], [W*0.5, H*0.5 + Math.sin(t*0.002)*3], [W*0.7, H*0.54], [W*0.85, H*0.51 + Math.sin(t*0.0025)*2], [W, H*0.56]];
+    drawMountainFill(far1, `rgba(0,0,0,${0.06 + breath * 0.3})`);
+    drawMountainLine(far1, `rgba(0,0,0,${0.1 + breath * 0.2})`, 0.5);
+
+    // 远山层2
+    const far2 = [[0, H*0.62], [W*0.1, H*0.6 + Math.sin(t*0.002+0.5)*2], [W*0.25, H*0.64], [W*0.4, H*0.58 + Math.sin(t*0.003+1)*2], [W*0.55, H*0.63], [W*0.7, H*0.59 + Math.sin(t*0.002+2)*2], [W*0.85, H*0.62], [W, H*0.65]];
+    drawMountainFill(far2, `rgba(0,0,0,${0.08 + breath * 0.3})`);
+    drawMountainLine(far2, `rgba(0,0,0,${0.12 + breath * 0.2})`, 0.6);
+
+    // 中景山
+    const mid1 = [[0, H*0.72], [W*0.12, H*0.68 + Math.sin(t*0.0015+1)*3], [W*0.28, H*0.73], [W*0.45, H*0.67 + Math.sin(t*0.002+2)*2], [W*0.6, H*0.71], [W*0.78, H*0.66 + Math.sin(t*0.001+0.5)*3], [W*0.9, H*0.7], [W, H*0.73]];
+    drawMountainFill(mid1, `rgba(0,0,0,${0.1 + breath * 0.25})`);
+    drawMountainLine(mid1, `rgba(0,0,0,${0.16 + breath * 0.2})`, 0.7);
+
+    // 中景山2
+    const mid2 = [[0, H*0.78], [W*0.08, H*0.76], [W*0.22, H*0.8 + Math.sin(t*0.001+0.8)*2], [W*0.38, H*0.74], [W*0.52, H*0.78 + Math.sin(t*0.0015+1.5)*2], [W*0.68, H*0.73], [W*0.82, H*0.77 + Math.sin(t*0.001+3)*2], [W*0.95, H*0.75], [W, H*0.79]];
+    drawMountainFill(mid2, `rgba(0,0,0,${0.13 + breath * 0.2})`);
+    drawMountainLine(mid2, `rgba(0,0,0,${0.2 + breath * 0.15})`, 0.8);
+
+    // 近景山（最深）
+    const near = [[0, H*0.88], [W*0.1, H*0.84 + Math.sin(t*0.0008)*2], [W*0.25, H*0.87], [W*0.4, H*0.82 + Math.sin(t*0.001+1)*2], [W*0.55, H*0.86], [W*0.7, H*0.81 + Math.sin(t*0.0008+2)*2], [W*0.85, H*0.85], [W, H*0.88]];
+    drawMountainFill(near, `rgba(0,0,0,${0.18 + breath * 0.15})`);
+    drawMountainLine(near, `rgba(0,0,0,${0.28 + breath * 0.1})`, 1);
+
+    // 云雾（呼吸感：缓慢膨胀收缩）
+    const d1 = Math.sin(t * 0.002) * 15;
+    const d2 = Math.cos(t * 0.0015) * 10;
+    const d3 = Math.sin(t * 0.001 + 2) * 12;
+    const mistBreath = 1 + Math.sin(t * 0.003) * 0.2; // 0.8 ~ 1.2
+
+    drawMist(W*0.2 + d1, H*0.7, W*0.18 * mistBreath, H*0.04 * mistBreath, 0.15 + breathSlow * 0.5);
+    drawMist(W*0.5 + d2, H*0.75, W*0.15 * mistBreath, H*0.03 * mistBreath, 0.12 + breathSlow * 0.4);
+    drawMist(W*0.8 + d3, H*0.68, W*0.12 * mistBreath, H*0.03 * mistBreath, 0.1 + breathSlow * 0.3);
+    drawMist(W*0.35 + d2, H*0.82, W*0.2 * mistBreath, H*0.04 * mistBreath, 0.12 + breathSlow * 0.4);
+    drawMist(W*0.65 + d1, H*0.85, W*0.14 * mistBreath, H*0.03 * mistBreath, 0.1 + breathSlow * 0.3);
+
+    drawBirds();
+    requestAnimationFrame(draw);
+  }
+  // 初始化几只鸟
+  for (let i = 0; i < 4; i++) spawnBird();
+  draw();
+})();
+
+/* ── 飘落诗词 ── */
+let poetryData = [];
+
+async function loadPoetry() {
+  try {
+    const res = await fetch('/api/poetry?count=5');
+    poetryData = await res.json();
+    if (poetryData.length > 0) {
+      document.getElementById('poetryText').textContent = poetryData[0].text;
+      document.getElementById('poetryInfo').textContent = `——${poetryData[0].author}《${poetryData[0].source}》`;
+    }
+  } catch (e) { console.log('诗词加载失败'); }
+}
+
+function startPoetryRain() {
+  const container = document.getElementById('poetryRain');
+  const allPoetry = poetryData.length > 0 ? poetryData : [
+    { text: '人生如逆旅我亦是行人' },
+    { text: '举杯邀明月对影成三人' },
+    { text: '大漠孤烟直长河落日圆' },
+    { text: '落霞与孤鹜齐飞秋水共长天一色' },
+  ];
+
+  function getEdgePositions() {
+    // 主内容区 max-width: 720px，居中
+    const W = window.innerWidth;
+    const contentW = Math.min(720, W - 48);
+    const margin = (W - contentW) / 2;
+    // 诗词分布在内容区两侧，留出一些呼吸空间
+    const leftMax = Math.max(0, margin - 40);
+    const rightMin = Math.min(W, W - margin + 40);
+    return { leftMax, rightMin };
+  }
+
+  let side = 0;
+  function spawnLine() {
+    const p = allPoetry[Math.floor(Math.random() * allPoetry.length)];
+    const el = document.createElement('div');
+    el.className = 'poetry-line';
+    el.textContent = p.text;
+    const { leftMax, rightMin } = getEdgePositions();
+    // 左右交替，分布在内容区两侧
+    side = 1 - side;
+    if (leftMax < 60) {
+      // 屏幕太窄，不显示诗词
+      return;
+    }
+    if (side === 0) {
+      el.style.left = (10 + Math.random() * (leftMax - 30)) + 'px';
+    } else {
+      el.style.left = (rightMin + 10 + Math.random() * (leftMax - 30)) + 'px';
+    }
+    el.style.fontSize = (0.8 + Math.random() * 0.3) + 'rem';
+    el.style.animationDuration = (30 + Math.random() * 30) + 's';
+    el.style.opacity = 0.12 + Math.random() * 0.15;
+    container.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+
+  // 疏密有致：每3秒一条，初始3条
+  setInterval(spawnLine, 3000);
+  for (let i = 0; i < 3; i++) setTimeout(spawnLine, i * 1200);
+}
+
+function dismissSplash() {
+  const splash = document.getElementById('splash');
+  splash.classList.add('fade-out');
+  document.getElementById('mainContent').style.display = 'block';
+  history.pushState({ page: 'main' }, '', '#main');
+  setTimeout(() => { splash.style.display = 'none'; startPoetryRain(); }, 1200);
+}
+
+function showSplash() {
+  const splash = document.getElementById('splash');
+  splash.style.display = '';
+  void splash.offsetWidth;
+  splash.classList.remove('fade-out');
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('result').classList.remove('active');
+  window.scrollTo(0, 0);
+}
+
+window.addEventListener('popstate', () => {
+  const splash = document.getElementById('splash');
+  if (splash.style.display === 'none' || splash.classList.contains('fade-out')) {
+    showSplash();
+  }
+});
+
+function toggleSettings() {
+  alert('API Key 在服务端 .env 文件中配置，前端无需设置。\n\n如需修改，请编辑项目根目录的 .env 文件。');
+}
+
+/* ── 主流程 ── */
+let currentResult = null;
+
+/* ── 自定义下拉组件 ── */
+function createCustomDropdown(containerId, options, placeholder, allowInput) {
+  const container = document.getElementById(containerId);
+  let selectedValue = '';
+
+  function render() {
+    container.innerHTML = '';
+    if (allowInput) {
+      const input = document.createElement('input');
+      input.className = 'select-trigger';
+      input.placeholder = placeholder || '输入或点击下拉选择…';
+      input.style.cursor = 'text';
+      container.appendChild(input);
+      const menu = document.createElement('div');
+      menu.className = 'select-menu';
+      options.forEach(opt => {
+        const div = document.createElement('div');
+        div.className = 'select-option';
+        div.dataset.value = opt.value;
+        div.textContent = opt.label || opt.value;
+        div.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          selectedValue = opt.value;
+          input.value = opt.value;
+          menu.classList.remove('open');
+          input.classList.remove('open');
+        });
+        menu.appendChild(div);
+      });
+      container.appendChild(menu);
+      input.addEventListener('focus', () => { menu.classList.add('open'); input.classList.add('open'); });
+      input.addEventListener('blur', () => {
+        setTimeout(() => { menu.classList.remove('open'); input.classList.remove('open'); selectedValue = input.value.trim(); }, 150);
+      });
+      input.addEventListener('input', () => {
+        selectedValue = input.value.trim();
+        const q = input.value.trim().toLowerCase();
+        menu.querySelectorAll('.select-option').forEach(o => {
+          o.style.display = !q || o.dataset.value.toLowerCase().includes(q) ? '' : 'none';
+        });
+      });
+    } else {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'select-trigger';
+      btn.innerHTML = `<span class="placeholder">${placeholder || '请选择…'}</span>`;
+      container.appendChild(btn);
+      const menu = document.createElement('div');
+      menu.className = 'select-menu';
+      options.forEach(opt => {
+        const div = document.createElement('div');
+        div.className = 'select-option';
+        div.dataset.value = opt.value;
+        div.textContent = opt.label || opt.value;
+        if (opt.sub) {
+          const sub = document.createElement('span');
+          sub.className = 'opt-sub';
+          sub.textContent = opt.sub;
+          div.appendChild(sub);
+        }
+        div.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          selectedValue = opt.value;
+          btn.innerHTML = opt.value
+            ? `${opt.label || opt.value}${opt.sub ? `<span class="opt-sub">${opt.sub}</span>` : ''}`
+            : `<span class="placeholder">${placeholder || '请选择…'}</span>`;
+          menu.querySelectorAll('.select-option').forEach(o => o.classList.remove('active'));
+          if (opt.value) div.classList.add('active');
+          menu.classList.remove('open');
+          btn.classList.remove('open');
+        });
+        menu.appendChild(div);
+      });
+      container.appendChild(menu);
+      btn.addEventListener('click', () => {
+        const isOpen = menu.classList.contains('open');
+        document.querySelectorAll('.select-menu.open').forEach(m => m.classList.remove('open'));
+        document.querySelectorAll('.select-trigger.open').forEach(t => t.classList.remove('open'));
+        if (!isOpen) { menu.classList.add('open'); btn.classList.add('open'); }
+      });
+    }
+  }
+  render();
+  return {
+    getValue: () => selectedValue,
+    setValue: (v) => {
+      selectedValue = v;
+      if (allowInput) { const input = container.querySelector('input'); if (input) input.value = v; }
+      else {
+        const btn = container.querySelector('.select-trigger');
+        const menu = container.querySelector('.select-menu');
+        if (btn && menu) {
+          const match = [...menu.querySelectorAll('.select-option')].find(o => o.dataset.value === v);
+          if (match && v) { btn.innerHTML = match.innerHTML; match.classList.add('active'); }
+          else { btn.innerHTML = `<span class="placeholder">${placeholder || '请选择…'}</span>`; menu.querySelectorAll('.select-option').forEach(o => o.classList.remove('active')); }
+        }
+      }
+    },
+    reset: () => { selectedValue = ''; render(); }
+  };
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.select-wrapper')) {
+    document.querySelectorAll('.select-menu.open').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.select-trigger.open').forEach(t => t.classList.remove('open'));
+  }
+});
+
+const personalityDD = createCustomDropdown('personalityDropdown', [
+  { value: '社恐但内心丰富，喜欢独处又渴望被理解' },
+  { value: '外向开朗，喜欢和人打交道，是朋友里的开心果' },
+  { value: '理性冷静，逻辑性强，喜欢分析问题，不太会表达感情' },
+  { value: '感性细腻，容易共情，常常为小事感动或伤感' },
+  { value: '自由散漫，不喜约束，随遇而安，活得比较随性' },
+  { value: '认真负责，追求完美，对自己和他人要求都高' },
+  { value: '好奇心旺盛，什么都想尝试，三分钟热度但热情满满' },
+  { value: '佛系淡然，不太争抢，喜欢安稳平静的生活' },
+  { value: '叛逆不羁，不喜欢循规蹈矩，有自己的想法和坚持' },
+  { value: '温柔体贴，善解人意，总是为别人着想' },
+  { value: '幽默风趣，喜欢逗人开心，但独处时也有安静的一面' },
+  { value: '倔强执着，认定的事不会轻易放弃，有点固执' },
+], '输入或点击下拉选择…', true);
+
+const hobbiesDD = createCustomDropdown('hobbiesDropdown', [
+  { value: '读闲书、喝咖啡、深夜散步、发呆' },
+  { value: '写代码、折腾技术、熬夜看文档' },
+  { value: '弹琴、听音乐、唱歌、收集唱片' },
+  { value: '画画、摄影、做手工、逛美术馆' },
+  { value: '下棋、打牌、解谜、玩策略游戏' },
+  { value: '旅行、徒步、露营、探索未知的地方' },
+  { value: '做饭、烘焙、研究菜谱、逛菜市场' },
+  { value: '健身、跑步、瑜伽、运动出汗' },
+  { value: '看电影、追剧、刷短视频、打游戏' },
+  { value: '养花、养猫、养狗、和自然相处' },
+  { value: '写字、抄经、焚香、泡茶' },
+  { value: '社交、聚会、认识新朋友、聊天' },
+], '输入或点击下拉选择…', true);
+
+const mbtiDD = createCustomDropdown('mbtiDropdown', [
+  { value: '', label: '不确定 / 跳过' },
+  { value: 'INTJ', label: 'INTJ', sub: '建筑师' },
+  { value: 'INTP', label: 'INTP', sub: '逻辑学家' },
+  { value: 'ENTJ', label: 'ENTJ', sub: '指挥官' },
+  { value: 'ENTP', label: 'ENTP', sub: '辩论家' },
+  { value: 'INFJ', label: 'INFJ', sub: '提倡者' },
+  { value: 'INFP', label: 'INFP', sub: '调停者' },
+  { value: 'ENFJ', label: 'ENFJ', sub: '主人公' },
+  { value: 'ENFP', label: 'ENFP', sub: '竞选者' },
+  { value: 'ISTJ', label: 'ISTJ', sub: '物流师' },
+  { value: 'ISFJ', label: 'ISFJ', sub: '守卫者' },
+  { value: 'ESTJ', label: 'ESTJ', sub: '总经理' },
+  { value: 'ESFJ', label: 'ESFJ', sub: '执政官' },
+  { value: 'ISTP', label: 'ISTP', sub: '鉴赏家' },
+  { value: 'ISFP', label: 'ISFP', sub: '探险家' },
+  { value: 'ESTP', label: 'ESTP', sub: '企业家' },
+  { value: 'ESFP', label: 'ESFP', sub: '表演者' },
+], '不确定 / 跳过', false);
+
+const zodiacDD = createCustomDropdown('zodiacDropdown', [
+  { value: '', label: '不选' },
+  { value: '白羊座', label: '白羊座', sub: '3.21-4.19' },
+  { value: '金牛座', label: '金牛座', sub: '4.20-5.20' },
+  { value: '双子座', label: '双子座', sub: '5.21-6.21' },
+  { value: '巨蟹座', label: '巨蟹座', sub: '6.22-7.22' },
+  { value: '狮子座', label: '狮子座', sub: '7.23-8.22' },
+  { value: '处女座', label: '处女座', sub: '8.23-9.22' },
+  { value: '天秤座', label: '天秤座', sub: '9.23-10.23' },
+  { value: '天蝎座', label: '天蝎座', sub: '10.24-11.22' },
+  { value: '射手座', label: '射手座', sub: '11.23-12.21' },
+  { value: '摩羯座', label: '摩羯座', sub: '12.22-1.19' },
+  { value: '水瓶座', label: '水瓶座', sub: '1.20-2.18' },
+  { value: '双鱼座', label: '双鱼座', sub: '2.19-3.20' },
+], '不选', false);
+
+const chineseZodiacDD = createCustomDropdown('chineseZodiacDropdown', [
+  { value: '', label: '不选' },
+  { value: '鼠', label: '鼠' }, { value: '牛', label: '牛' },
+  { value: '虎', label: '虎' }, { value: '兔', label: '兔' },
+  { value: '龙', label: '龙' }, { value: '蛇', label: '蛇' },
+  { value: '马', label: '马' }, { value: '羊', label: '羊' },
+  { value: '猴', label: '猴' }, { value: '鸡', label: '鸡' },
+  { value: '狗', label: '狗' }, { value: '猪', label: '猪' },
+], '不选', false);
+
+async function generate() {
+  const personality = personalityDD.getValue();
+  const hobbies = hobbiesDD.getValue();
+  const mbti = mbtiDD.getValue();
+  const zodiac = zodiacDD.getValue();
+  const chineseZodiac = chineseZodiacDD.getValue();
+
+  if (!personality && !hobbies && !mbti) {
+    showError('请至少填写性格、爱好，或选择 MBTI');
+    return;
+  }
+
+  const gender = document.querySelector('input[name="gender"]:checked').value;
+  const era = document.querySelector('input[name="era"]:checked').value;
+
+  hideError();
+  setLoading(true);
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ personality, hobbies, mbti, zodiac, chineseZodiac, gender, era }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || '请求失败');
+    currentResult = data;
+    renderResult(data);
+    loadGallery();
+  } catch (err) {
+    showError(err.message);
+  } finally {
+    setLoading(false);
+  }
+}
+
+function renderResult(data) {
+  document.getElementById('ancientName').textContent = data.name || '';
+  document.getElementById('nameOrigin').textContent = data.name_origin || '';
+  document.getElementById('biography').textContent = data.biography || '';
+  document.getElementById('friendName').textContent = data.friend ? `知己：${data.friend}` : '';
+  document.getElementById('friendEra').textContent = data.friend_era || '';
+  document.getElementById('friendStage').textContent = data.friend_stage || '';
+  document.getElementById('friendStory').textContent = data.friend_story || '';
+  document.getElementById('friendReason').textContent = data.friend_reason ? `——${data.friend_reason}` : '';
+  document.getElementById('friendQuote').textContent = data.friend_quote || '';
+
+  const sceneSection = document.getElementById('sceneSection');
+  if (data.scene) {
+    document.getElementById('sceneText').textContent = data.scene;
+    sceneSection.style.display = 'block';
+  } else {
+    sceneSection.style.display = 'none';
+  }
+
+  // 在覆盖层中显示卡片
+  document.getElementById('loading').classList.remove('active');
+  document.getElementById('overlayCard').classList.add('active');
+}
+
+/* ── 分享卡片 ── */
+function generateShareCard() {
+  if (!currentResult) return;
+  const canvas = document.getElementById('shareCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 1080, H = 1440;
+  canvas.width = W; canvas.height = H;
+  const d = currentResult;
+
+  ctx.fillStyle = '#f8f6f2';
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.strokeStyle = 'rgba(0,0,0,0.02)';
+  ctx.lineWidth = 1;
+  for (let y = 0; y < H; y += 28) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  ctx.font = '22px "LXGW WenKai", serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('如果我是古人 · 穿越千年，遇见另一个自己', W / 2, 70);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#2c2c2c';
+  ctx.font = '72px "Zhi Mang Xing", cursive';
+  ctx.fillText(d.name || '', W / 2, 180);
+
+  ctx.font = '22px "LXGW WenKai", serif';
+  ctx.fillStyle = '#999';
+  ctx.textAlign = 'center';
+  wrapText(ctx, d.name_origin || '', W / 2, 225, W - 160, 34);
+  drawSectionLine(ctx, 300, W);
+
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#555';
+  ctx.font = '28px "Zhi Mang Xing", cursive';
+  ctx.fillText('人物小传', 80, 350);
+
+  ctx.font = '24px "LXGW WenKai", serif';
+  ctx.fillStyle = '#555';
+  const bioEndY = wrapText(ctx, d.biography || '', 80, 395, W - 160, 42);
+  drawSectionLine(ctx, bioEndY + 30, W);
+
+  const friendY = bioEndY + 70;
+  ctx.fillStyle = 'rgba(0,0,0,0.01)';
+  ctx.fillRect(60, friendY - 15, W - 120, 280);
+  ctx.strokeStyle = 'rgba(0,0,0,0.04)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(60, friendY - 15, W - 120, 280);
+
+  ctx.fillStyle = '#2c2c2c';
+  ctx.font = '28px "Zhi Mang Xing", cursive';
+  ctx.fillText('古人知己', 80, friendY + 20);
+
+  ctx.fillStyle = '#2c2c2c';
+  ctx.font = '36px "Zhi Mang Xing", cursive';
+  ctx.fillText(`知己：${d.friend || ''}`, 80, friendY + 70);
+
+  ctx.font = '20px "LXGW WenKai", serif';
+  ctx.fillStyle = '#999';
+  ctx.fillText(d.friend_era || '', 80, friendY + 105);
+
+  if (d.friend_stage) {
+    ctx.fillStyle = 'rgba(0,0,0,0.04)';
+    const stageW = ctx.measureText(d.friend_stage).width + 24;
+    ctx.fillRect(80, friendY + 120, stageW, 30);
+    ctx.fillStyle = '#555';
+    ctx.font = '18px "LXGW WenKai", serif';
+    ctx.fillText(d.friend_stage, 92, friendY + 141);
+  }
+
+  ctx.font = '22px "LXGW WenKai", serif';
+  ctx.fillStyle = '#555';
+  wrapText(ctx, d.friend_story || '', 80, friendY + 180, W - 160, 36);
+
+  if (d.friend_reason) {
+    ctx.font = '20px "LXGW WenKai", serif';
+    ctx.fillStyle = '#999';
+    wrapText(ctx, `——${d.friend_reason}`, 80, friendY + 255, W - 160, 32);
+  }
+
+  const quoteY = friendY + 320;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#2c2c2c';
+  ctx.font = '32px "Zhi Mang Xing", cursive';
+  wrapText(ctx, d.friend_quote || '', W / 2, quoteY + 40, W - 200, 48);
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.font = '18px "LXGW WenKai", serif';
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.fillText('候鸟AI创造局 · 如果我是古人', W / 2, H - 40);
+
+  const link = document.createElement('a');
+  link.download = `古人身份-${d.name || '未知'}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const chars = text.split('');
+  let line = '';
+  let currentY = y;
+  for (let i = 0; i < chars.length; i++) {
+    const testLine = line + chars[i];
+    if (ctx.measureText(testLine).width > maxWidth && line) {
+      ctx.fillText(line, x, currentY);
+      line = chars[i];
+      currentY += lineHeight;
+    } else { line = testLine; }
+  }
+  ctx.fillText(line, x, currentY);
+  return currentY;
+}
+
+function drawSectionLine(ctx, y, W) {
+  ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(80, y);
+  ctx.lineTo(W - 80, y);
+  ctx.stroke();
+}
+
+/* ── 历史画廊 ── */
+async function loadGallery() {
+  try {
+    const res = await fetch('/api/history');
+    const history = await res.json();
+    const section = document.getElementById('gallerySection');
+    const grid = document.getElementById('galleryGrid');
+    const count = document.getElementById('galleryCount');
+    if (history.length === 0) { section.classList.remove('active'); return; }
+    section.classList.add('active');
+    count.textContent = `共 ${history.length} 位古人`;
+    grid.innerHTML = history.map(item => `
+      <div class="gallery-item" onclick='showHistory(${JSON.stringify(item.result)})'>
+        <button class="gi-delete" onclick="event.stopPropagation();deleteHistory('${item.id}')" title="删除">&times;</button>
+        <div class="gi-name">${item.result.name || '未知'}</div>
+        <div class="gi-friend">知己：${item.result.friend || '未知'}</div>
+        <div class="gi-date">${new Date(item.timestamp).toLocaleDateString('zh-CN')}</div>
+      </div>
+    `).join('');
+  } catch (e) { console.log('历史加载失败'); }
+}
+
+function showHistory(data) {
+  currentResult = data;
+  document.getElementById('cardOverlay').classList.add('active');
+  renderResult(data);
+}
+
+async function deleteHistory(id) {
+  try { await fetch(`/api/history/${id}`, { method: 'DELETE' }); loadGallery(); }
+  catch (e) { console.log('删除失败'); }
+}
+
+/* ── UI 辅助 ── */
+function setLoading(active) {
+  const btn = document.getElementById('submitBtn');
+  const overlay = document.getElementById('cardOverlay');
+  const loading = document.getElementById('loading');
+  const card = document.getElementById('overlayCard');
+  if (active) {
+    btn.disabled = true;
+    btn.textContent = '落笔中…';
+    overlay.classList.add('active');
+    loading.classList.add('active');
+    card.classList.remove('active');
+  } else {
+    btn.disabled = false;
+    btn.textContent = '落笔生花';
+    loading.classList.remove('active');
+  }
+}
+
+function showError(msg) { const el = document.getElementById('errorMsg'); el.textContent = msg; el.classList.add('active'); }
+function hideError() { document.getElementById('errorMsg').classList.remove('active'); }
+
+function closeOverlay() {
+  document.getElementById('cardOverlay').classList.remove('active');
+  document.getElementById('overlayCard').classList.remove('active');
+  document.getElementById('loading').classList.remove('active');
+}
+
+function resetForm() {
+  closeOverlay();
+  personalityDD.reset();
+  hobbiesDD.reset();
+  mbtiDD.reset();
+  zodiacDD.reset();
+  chineseZodiacDD.reset();
+  currentResult = null;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+loadPoetry();
+loadGallery();
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeOverlay();
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    const loading = document.getElementById('loading');
+    if (!loading.classList.contains('active')) generate();
+  }
+});
+</script>
+
+</body>
+</html>

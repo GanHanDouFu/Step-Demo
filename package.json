@@ -1,0 +1,19 @@
+{
+  "name": "if-i-were-ancient",
+  "version": "1.0.0",
+  "description": "如果我是古人 — 候鸟AI创造局参赛作品",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["ai", "ancient-china", "creative"],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}
