@@ -32,6 +32,7 @@ body {
   color: var(--ink-deep);
   min-height: 100vh;
   overflow-x: hidden;
+  margin: 0;
 }
 
 body::before {
@@ -72,7 +73,7 @@ body::before {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 18vh;
+  padding-top: 12vh;
   z-index: 2;
   pointer-events: none;
   text-align: center;
@@ -114,7 +115,7 @@ body::before {
 /* 按钮固定在底部 */
 .splash-enter {
   position: absolute;
-  bottom: 12vh;
+  bottom: 16vh;
   left: 0;
   right: 0;
   text-align: center;
@@ -182,8 +183,10 @@ body::before {
   position: relative;
   z-index: 2;
   max-width: 720px;
+  width: 100%;
   margin: 0 auto;
-  padding: 40px 24px 100px;
+  padding: 40px 24px 0;
+  box-sizing: border-box;
 }
 
 /* ── 标题区 ── */
@@ -455,6 +458,38 @@ textarea.form-input {
 }
 .overlay-loading.active { display: block; }
 
+.ink-grind {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 20px;
+  border: 3px solid rgba(58,47,37,0.1);
+  border-top-color: var(--ink-medium);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text {
+  font-family: var(--font-caption);
+  font-size: 1rem;
+  color: var(--ink-light);
+  letter-spacing: 0.15em;
+}
+
+.error-msg {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--vermilion);
+  text-align: center;
+  margin-top: 12px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  min-height: 0;
+}
+.error-msg.active {
+  opacity: 1;
+}
+
 .overlay-card {
   display: none;
 }
@@ -486,6 +521,7 @@ textarea.form-input {
 
 .overlay-card .identity-card {
   box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+  border-radius: 12px;
 }
 
 .overlay-actions {
@@ -504,7 +540,7 @@ textarea.form-input {
   border: 1px solid rgba(0,0,0,0.08);
   background: rgba(245,240,232,0.6);
   color: var(--ink-medium);
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -527,21 +563,408 @@ textarea.form-input {
 .card-overlay-content::-webkit-scrollbar-track { background: transparent; }
 .card-overlay-content::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
 
+/* ═══════════════════════════════════════
+   身份卡片 — 宣纸文书风格
+   ═══════════════════════════════════════ */
+
+.identity-card {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(247,240,230,0.5) 0%, transparent 50%),
+    linear-gradient(225deg, rgba(201,169,78,0.03) 0%, transparent 40%),
+    var(--rice-paper);
+  border: 1px solid rgba(58,47,37,0.1);
+  border-radius: 12px;
+  padding: 4px;
+  overflow: hidden;
+}
+
+/* 外层双线边框 */
+.identity-card::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(58,47,37,0.08);
+  border-radius: 9px;
+  pointer-events: none;
+}
+
+.card-content {
+  padding: 48px 44px 40px;
+}
+
+/* ── 名字区域 ── */
+
+.ancient-name-section {
+  text-align: center;
+  padding-bottom: 36px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid rgba(58,47,37,0.08);
+}
+
+.ancient-name {
+  font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+  font-size: 2.6rem;
+  font-weight: normal;
+  color: var(--ink-deep);
+  letter-spacing: 0.2em;
+  line-height: 1.4;
+  padding-bottom: 16px;
+  margin-bottom: 14px;
+  position: relative;
+}
+
+/* 名字下方朱红短横 */
+.ancient-name::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: var(--vermilion);
+  margin: 14px auto 0;
+  opacity: 0.7;
+}
+
+.name-origin {
+  font-family: var(--font-caption);
+  font-size: 0.88rem;
+  color: var(--ink-light);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+/* ── 段落标签 ── */
+
+.section-label {
+  font-family: var(--font-caption);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--vermilion);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding-left: 12px;
+  border-left: 2px solid var(--vermilion);
+  margin-bottom: 16px;
+  opacity: 0.85;
+  border-radius: 0 4px 4px 0;
+}
+
+/* ── 人物小传 ── */
+
+.biography-section {
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(58,47,37,0.06);
+}
+
+.biography {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  color: var(--ink-medium);
+  line-height: 2;
+  letter-spacing: 0.02em;
+  text-indent: 2em;
+}
+
+/* ── 古人知己 ── */
+
+.friend-section {
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(58,47,37,0.06);
+}
+
+.friend-header {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.friend-name {
+  font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+  font-size: 1.25rem;
+  color: var(--ink-deep);
+  letter-spacing: 0.08em;
+}
+
+.friend-meta {
+  display: flex;
+  gap: 8px;
+}
+
+.friend-era,
+.friend-stage {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--ink-light);
+  letter-spacing: 0.05em;
+  padding: 3px 10px;
+  border: 1px solid rgba(58,47,37,0.08);
+  border-radius: 10px;
+  background: rgba(247,240,230,0.4);
+}
+
+.friend-story {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ink-medium);
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+  margin-bottom: 14px;
+}
+
+.friend-reason {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+  font-style: italic;
+}
+
+/* ── 相遇场景 ── */
+
+.scene-section {
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(58,47,37,0.06);
+}
+
+.scene-text {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--ink-deep);
+  line-height: 2;
+  letter-spacing: 0.03em;
+  padding: 20px 24px;
+  background:
+    linear-gradient(to right, rgba(201,169,78,0.04), transparent 30%),
+    rgba(247,240,230,0.3);
+  border-left: 2px solid rgba(201,169,78,0.25);
+  border-radius: 0 8px 8px 0;
+}
+
+/* ── 尾句 ── */
+
+.quote-section {
+  text-align: center;
+  padding-top: 8px;
+}
+
+.friend-quote {
+  font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+  font-size: 1.1rem;
+  color: var(--ink-medium);
+  line-height: 1.8;
+  letter-spacing: 0.08em;
+  position: relative;
+  display: inline-block;
+  padding: 0 20px;
+}
+
+/* 引号装饰 */
+.friend-quote::before {
+  content: '\300C';
+  position: absolute;
+  left: 0;
+  top: -2px;
+  color: rgba(194,59,34,0.2);
+  font-size: 1.4em;
+}
+
+.friend-quote::after {
+  content: '\300D';
+  position: absolute;
+  right: 0;
+  bottom: -2px;
+  color: rgba(194,59,34,0.2);
+  font-size: 1.4em;
+}
+
+/* ── 响应式 ── */
+
 @media (max-width: 600px) {
   html { font-size: 16px; }
-  .container { padding: 20px 16px 60px; }
+  .container { padding: 20px 16px 16px; }
   .title { font-size: 3rem; }
-  .splash-overlay { padding-top: 15vh; }
+  .splash-overlay { padding-top: 10vh; }
   .splash-title { font-size: 3.8rem; letter-spacing: 0.12em; }
   .splash-sub { font-size: 1rem; letter-spacing: 0.2em; }
   .splash-desc { font-size: 0.95rem; padding: 0 24px; max-width: 320px; }
-  .splash-enter { bottom: 10vh; }
+  .splash-enter { bottom: 14vh; }
   .splash-enter-btn { font-size: 2rem; }
-  .input-card, .card-content { padding: 28px 20px; }
+  .input-card { padding: 28px 20px; }
+  .card-content { padding: 32px 24px 28px; }
+  .ancient-name { font-size: 2rem; letter-spacing: 0.15em; }
+  .friend-header { flex-direction: column; gap: 8px; }
+  .scene-text { padding: 16px 18px; }
   .select-row { flex-direction: column; gap: 12px; }
-  .ancient-name { font-size: 2.8rem; }
   .gallery-grid { grid-template-columns: 1fr; }
   .actions { flex-direction: column; }
+  .gallery-section { margin: 48px 0 0; }
+}
+
+/* ── 画廊区域 ── */
+.gallery-section {
+  margin: 72px 0 0;
+  display: none;
+}
+.gallery-section.active { display: block; }
+
+.gallery-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.gallery-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--ink-deep);
+  letter-spacing: 0.1em;
+}
+
+.gallery-count {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--ink-light);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+/* ── 画廊卡片 ── */
+.gallery-item {
+  background: #f5f0e8;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 10px;
+  padding: 24px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--vermilion);
+  opacity: 0.15;
+}
+
+.gallery-item:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  border-color: rgba(0,0,0,0.1);
+}
+
+.gallery-item:hover::before {
+  opacity: 0.4;
+}
+
+.gi-name {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--ink-deep);
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.gi-friend {
+  font-family: var(--font-caption);
+  font-size: 0.88rem;
+  color: var(--ink-medium);
+  margin-bottom: 4px;
+}
+
+.gi-date {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--ink-light);
+  margin-top: 12px;
+  opacity: 0.6;
+}
+
+.gi-delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: rgba(0,0,0,0.15);
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  opacity: 0;
+}
+
+.gallery-item:hover .gi-delete {
+  opacity: 1;
+}
+
+.gi-delete:hover {
+  color: var(--vermilion);
+  background: rgba(194,59,34,0.06);
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 48px 0 32px;
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  color: var(--ink-light);
+  letter-spacing: 0.15em;
+  opacity: 0.5;
+}
+
+.settings-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  width: 36px;
+  height: 36px;
+  background: rgba(245,240,232,0.8);
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 50%;
+  font-size: 1.2rem;
+  color: var(--ink-light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  backdrop-filter: blur(4px);
+}
+.settings-toggle:hover {
+  background: rgba(245,240,232,1);
+  color: var(--ink-deep);
+}
+
+.overlay-actions { flex-wrap: wrap; }
+@media (max-width: 600px) {
+  .overlay-actions .btn-action { font-size: 0.95rem; padding: 14px 12px; }
+  .settings-toggle { width: 44px; height: 44px; font-size: 1.4rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -588,6 +1011,10 @@ textarea.form-input {
   <!-- 输入区 -->
   <div class="input-card" id="inputSection">
     <div class="form-group">
+      <label class="form-label">你的姓名</label>
+      <input type="text" class="form-input" id="nameInput" placeholder="如：李明（可选，留空则随机）" maxlength="20">
+    </div>
+    <div class="form-group">
       <label class="form-label">你的性格</label>
       <div class="select-wrapper" id="personalityDropdown"></div>
     </div>
@@ -620,12 +1047,7 @@ textarea.form-input {
       </div>
       <div class="select-group">
         <label class="form-label">时代偏好</label>
-        <div class="radio-pills">
-          <div class="radio-pill"><input type="radio" name="era" id="e-any" value="不限" checked><label for="e-any">不限</label></div>
-          <div class="radio-pill"><input type="radio" name="era" id="e-pre" value="先秦"><label for="e-pre">先秦</label></div>
-          <div class="radio-pill"><input type="radio" name="era" id="e-tang" value="唐宋"><label for="e-tang">唐宋</label></div>
-          <div class="radio-pill"><input type="radio" name="era" id="e-ming" value="明清"><label for="e-ming">明清</label></div>
-        </div>
+        <div class="select-wrapper" id="eraDropdown"></div>
       </div>
     </div>
     <button class="btn-submit" id="submitBtn" onclick="generate()">落笔生花</button>
@@ -670,9 +1092,13 @@ textarea.form-input {
           </div>
           <div class="friend-section">
             <div class="section-label">古人知己</div>
-            <div class="friend-name" id="friendName"></div>
-            <div class="friend-era" id="friendEra"></div>
-            <div class="friend-stage" id="friendStage"></div>
+            <div class="friend-header">
+              <div class="friend-name" id="friendName"></div>
+              <div class="friend-meta">
+                <span class="friend-era" id="friendEra"></span>
+                <span class="friend-stage" id="friendStage"></span>
+              </div>
+            </div>
             <div class="friend-story" id="friendStory"></div>
             <div class="friend-reason" id="friendReason"></div>
           </div>
@@ -693,7 +1119,7 @@ textarea.form-input {
   </div>
 </div>
 
-<canvas id="shareCanvas" width="1080" height="1440"></canvas>
+<canvas id="shareCanvas" width="1080" height="1440" style="display:none"></canvas>
 
 <script>
 /* ── 欢迎页 Canvas 山水 ── */
@@ -868,25 +1294,41 @@ textarea.form-input {
 /* ── 飘落诗词 ── */
 let poetryData = [];
 
+let poetryIndex = 0;
+
 async function loadPoetry() {
   try {
-    const res = await fetch('/api/poetry?count=5');
+    const res = await fetch('/api/poetry');
     poetryData = await res.json();
+    // Fisher-Yates 洗牌
+    for (let i = poetryData.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [poetryData[i], poetryData[j]] = [poetryData[j], poetryData[i]];
+    }
+    poetryIndex = 0;
     if (poetryData.length > 0) {
       document.getElementById('poetryText').textContent = poetryData[0].text;
       document.getElementById('poetryInfo').textContent = `——${poetryData[0].author}《${poetryData[0].source}》`;
     }
-  } catch (e) { console.log('诗词加载失败'); }
+  } catch (e) { console.error('诗词加载失败', e); }
+}
+
+function getNextPoetry() {
+  if (poetryData.length === 0) return null;
+  const p = poetryData[poetryIndex];
+  poetryIndex = (poetryIndex + 1) % poetryData.length;
+  // 一轮用完，重新洗牌
+  if (poetryIndex === 0) {
+    for (let i = poetryData.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [poetryData[i], poetryData[j]] = [poetryData[j], poetryData[i]];
+    }
+  }
+  return p;
 }
 
 function startPoetryRain() {
   const container = document.getElementById('poetryRain');
-  const allPoetry = poetryData.length > 0 ? poetryData : [
-    { text: '人生如逆旅我亦是行人' },
-    { text: '举杯邀明月对影成三人' },
-    { text: '大漠孤烟直长河落日圆' },
-    { text: '落霞与孤鹜齐飞秋水共长天一色' },
-  ];
 
   function getEdgePositions() {
     // 主内容区 max-width: 720px，居中
@@ -901,7 +1343,8 @@ function startPoetryRain() {
 
   let side = 0;
   function spawnLine() {
-    const p = allPoetry[Math.floor(Math.random() * allPoetry.length)];
+    const p = getNextPoetry();
+    if (!p) return;
     const el = document.createElement('div');
     el.className = 'poetry-line';
     el.textContent = p.text;
@@ -1146,7 +1589,20 @@ const chineseZodiacDD = createCustomDropdown('chineseZodiacDropdown', [
   { value: '狗', label: '狗' }, { value: '猪', label: '猪' },
 ], '不选', false);
 
+const eraDD = createCustomDropdown('eraDropdown', [
+  { value: '', label: '不限' },
+  { value: '先秦', label: '先秦' },
+  { value: '秦汉', label: '秦汉' },
+  { value: '魏晋', label: '魏晋' },
+  { value: '隋唐', label: '隋唐' },
+  { value: '宋', label: '宋' },
+  { value: '元', label: '元' },
+  { value: '明', label: '明' },
+  { value: '清', label: '清' },
+], '不限', false);
+
 async function generate() {
+  const name = document.getElementById('nameInput').value.trim();
   const personality = personalityDD.getValue();
   const hobbies = hobbiesDD.getValue();
   const mbti = mbtiDD.getValue();
@@ -1159,7 +1615,7 @@ async function generate() {
   }
 
   const gender = document.querySelector('input[name="gender"]:checked').value;
-  const era = document.querySelector('input[name="era"]:checked').value;
+  const era = eraDD.getValue();
 
   hideError();
   setLoading(true);
@@ -1168,7 +1624,7 @@ async function generate() {
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ personality, hobbies, mbti, zodiac, chineseZodiac, gender, era }),
+      body: JSON.stringify({ name, personality, hobbies, mbti, zodiac, chineseZodiac, gender, era }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || '请求失败');
@@ -1345,10 +1801,11 @@ async function loadGallery() {
         <button class="gi-delete" onclick="event.stopPropagation();deleteHistory('${item.id}')" title="删除">&times;</button>
         <div class="gi-name">${item.result.name || '未知'}</div>
         <div class="gi-friend">知己：${item.result.friend || '未知'}</div>
+        ${item.result.friend_stage ? `<div class="gi-friend">${item.result.friend_stage}</div>` : ''}
         <div class="gi-date">${new Date(item.timestamp).toLocaleDateString('zh-CN')}</div>
       </div>
     `).join('');
-  } catch (e) { console.log('历史加载失败'); }
+  } catch (e) { console.error('历史加载失败', e); }
 }
 
 function showHistory(data) {
@@ -1359,7 +1816,7 @@ function showHistory(data) {
 
 async function deleteHistory(id) {
   try { await fetch(`/api/history/${id}`, { method: 'DELETE' }); loadGallery(); }
-  catch (e) { console.log('删除失败'); }
+  catch (e) { console.error('删除失败', e); }
 }
 
 /* ── UI 辅助 ── */
@@ -1397,6 +1854,7 @@ function resetForm() {
   mbtiDD.reset();
   zodiacDD.reset();
   chineseZodiacDD.reset();
+  eraDD.reset();
   currentResult = null;
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }

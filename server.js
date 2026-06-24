@@ -27,7 +27,7 @@ const POETRY = require('./poetry.js');
 // API: 随机诗词
 // ═══════════════════════════════════════
 app.get('/api/poetry', (req, res) => {
-  const count = Math.min(parseInt(req.query.count) || 1, 5);
+  const count = parseInt(req.query.count) || POETRY.length;
   const shuffled = [...POETRY].sort(() => Math.random() - 0.5);
   res.json(shuffled.slice(0, count));
 });
@@ -36,7 +36,7 @@ app.get('/api/poetry', (req, res) => {
 // API: 代理 AI 请求（隐藏 Key）
 // ═══════════════════════════════════════
 app.post('/api/generate', async (req, res) => {
-  const { personality, hobbies, gender, era, mbti, zodiac, chineseZodiac } = req.body;
+  const { name, personality, hobbies, gender, era, mbti, zodiac, chineseZodiac } = req.body;
 
   if (!personality && !hobbies && !mbti) {
     return res.status(400).json({ error: '请至少填写性格、爱好，或选择 MBTI' });
@@ -60,20 +60,24 @@ app.post('/api/generate', async (req, res) => {
   if (chineseZodiac) personalityDesc += `生肖：${chineseZodiac}；`;
   if (personality) personalityDesc += `自我描述：${personality}；`;
 
+  const nameHint = name ? `【真实姓名】${name}` : '';
+
   const prompt = `你是一位精通中国历史文化的学者，擅长根据现代人的性格描述，为其创造一个古代身份。你熟读《史记》《世说新语》《聊斋志异》等古典文学，对各朝代的文人逸事如数家珍。
 
 请根据以下现代人的描述，创造一个古风身份：
 
+${nameHint}
 【性格特征】${personalityDesc || '未提供'}
 【兴趣爱好】${hobbies || '未提供'}
 【${genderHint}】
 【${eraHint}】
 
 要求：
-1. 名字要有典故出处，2-4个字，符合所选朝代的命名习惯。姓氏要丰富多样，每次生成必须使用不同的姓氏，优先选择不常见的姓氏（如：谢、陆、裴、崔、萧、卫、桓、庾、温、柳、白、元、韩、贺、顾、程、阮、陶、林、叶、秦、宋、楚、云、岳、龙、凤、慕容、上官、司马、欧阳、诸葛、独孤、长孙、宇文、令狐、公孙、端木、东方、南宫、百里、轩辕等），避免总是用沈、王、李、张等大姓。
-2. 小传要用文言与白话结合的风格（类似《世说新语》），有具体轶事，150-250字
-3. 古人知己必须是真实历史人物，要说明具体的人生阶段和相识故事
-4. 赠言要仿写古人风格，有韵味
+1. 名字要有典故出处，2-4个字，符合所选朝代的命名习惯。${name ? `古风名与用户真名"${name}"的关联方式要灵活多变，每次从不同角度切入：有时沿用姓氏、取名字中的一字谐音或化用；有时取名字中某个字的含义进行古风转化（如"明"化为"昭"、"浩"化为"沧"）；有时根据名字的整体意境重新演绎。不要每次都用同一种方式。` : '姓氏要丰富多样，每次生成必须使用不同的姓氏，优先选择不常见的姓氏（如：谢、陆、裴、崔、萧、卫、桓、庾、温、柳、白、元、韩、贺、顾、程、阮、陶、林、叶、秦、宋、楚、云、岳、龙、凤、慕容、上官、司马、欧阳、诸葛、独孤、长孙、宇文、令狐、公孙、端木、东方、南宫、百里、轩辕等），避免总是用沈、王、李、张等大姓。'}
+2. name_origin 要解释古风名字与${name ? `用户真名"${name}"的渊源关系` : ''}，以及典故出处和含义（2-3句话）
+3. 小传要用文言与白话结合的风格（类似《世说新语》），有具体轶事，150-250字${name ? '。小传中可以自然提及此人与"' + name + '"的关联，但不要每次都用同样的方式，有时可提及其前世今生，有时可融入名字典故，有时可作为轶事点缀。' : ''}
+4. 古人知己必须是真实历史人物，要说明具体的人生阶段和相识故事。friend_stage 必须多样化，每次从不同角度切入，可以从以下选择或自行发挥：年少求学、初入仕途、壮年游历、贬谪流离、沙场征战、田园归隐、酒肆偶逢、书院论道、寺庙参禅、江边垂钓、月下独酌、雪夜访友、科举落第、边塞戍守、市井闲逛、山水偶遇、晚年著书、病中相慰。不要重复使用同一个阶段。
+5. 赠言要仿写古人风格，有韵味
 
 请严格按以下JSON格式返回，不要有其他文字：
 {
@@ -103,7 +107,7 @@ app.post('/api/generate', async (req, res) => {
           { role: 'user', content: prompt },
         ],
         temperature: 0.85,
-        max_tokens: 1500,
+        max_tokens: 3000,
       }),
     });
 
@@ -121,8 +125,10 @@ app.post('/api/generate', async (req, res) => {
 
     // 解析 JSON
     let parsed;
+    // 去掉 markdown 代码块标记
+    let cleaned = content.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
     try {
-      parsed = JSON.parse(content);
+      parsed = JSON.parse(cleaned);
     } catch {
       const match = content.match(/\{[\s\S]*\}/);
       if (match) {
