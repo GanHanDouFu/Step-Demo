@@ -193,8 +193,12 @@ app.delete('/api/history/:id', (req, res) => {
   }
 });
 
-// ── 启动 ──
-app.listen(PORT, () => {
-  console.log(`\n  如果我是古人 — 服务已启动`);
-  console.log(`  http://localhost:${PORT}\n`);
-});
+// ── 启动（本地开发时监听端口，Vercel 时导出 app） ──
+if (process.env.VERCEL) {
+  module.exports = app;
+} else {
+  app.listen(PORT, () => {
+    console.log(`\n  如果我是古人 — 服务已启动`);
+    console.log(`  http://localhost:${PORT}\n`);
+  });
+}
