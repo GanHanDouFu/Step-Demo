@@ -3,8 +3,10 @@ const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 
-// ── 加载环境变量 ──
-require('dotenv').config();
+// ── 加载环境变量（本地开发用 dotenv，Vercel 从设置读） ──
+if (!process.env.VERCEL) {
+  try { require('dotenv').config(); } catch (e) {}
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,12 +15,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ── 数据目录 ──
+// ── 数据目录（仅本地开发） ──
+const IS_VERCEL = !!process.env.VERCEL;
 const DATA_DIR = path.join(__dirname, 'data');
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-
 const HISTORY_FILE = path.join(DATA_DIR, 'history.json');
-if (!fs.existsSync(HISTORY_FILE)) fs.writeFileSync(HISTORY_FILE, '[]', 'utf-8');
+
+if (!IS_VERCEL) {
+  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+  if (!fs.existsSync(HISTORY_FILE)) fs.writeFileSync(HISTORY_FILE, '[]', 'utf-8');
+}
 
 // ── 古诗词库 ──
 const POETRY = require('./poetry.js');
