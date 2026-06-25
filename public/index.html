@@ -50,10 +50,14 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   margin: 0;
+}
+
+/* 全局隐藏滚动条 */
+* {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-body::-webkit-scrollbar { display: none; }
+*::-webkit-scrollbar { display: none; }
 
 body::before {
   content: '';
