@@ -312,6 +312,13 @@ body::before {
   color: rgba(0,0,0,0.25);
   font-style: italic;
 }
+.form-input:-webkit-autofill,
+.form-input:-webkit-autofill:hover,
+.form-input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #f5f0e8 inset;
+  -webkit-text-fill-color: var(--ink-deep);
+  transition: background-color 5000s ease-in-out 0s;
+}
 textarea.form-input {
   resize: vertical;
   min-height: 72px;
