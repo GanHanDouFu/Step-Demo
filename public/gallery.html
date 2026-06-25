@@ -42,7 +42,10 @@ body {
   color: var(--ink-deep);
   min-height: 100vh;
   overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
+body::-webkit-scrollbar { display: none; }
 
 body::before {
   content: '';
@@ -90,6 +93,17 @@ body::before {
   padding: 40px 24px 60px;
   box-sizing: border-box;
   min-height: 100vh;
+}
+.gallery-page::after {
+  content: '';
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to top, #F7F0E6, transparent);
+  pointer-events: none;
+  z-index: 10;
 }
 
 /* ── 顶栏 ── */
