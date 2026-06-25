@@ -225,16 +225,16 @@ body::before {
   cursor: pointer;
   transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
   position: relative;
-  overflow: hidden;
 }
 
 .gallery-item::before {
   content: '';
   position: absolute;
-  top: 0; left: 20px; right: 20px;
+  top: 0; left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(194,59,34,0.3), transparent);
-  border-radius: 1px;
+  overflow: hidden;
+  background: linear-gradient(90deg, transparent 20px, rgba(194,59,34,0.3) 50%, transparent calc(100% - 20px));
+  border-radius: 10px 10px 0 0;
 }
 
 .gallery-item:hover {
