@@ -762,7 +762,7 @@ body::before {
       <div class="overlay-meta" id="overlayMeta"></div>
       <div class="overlay-actions">
         <button class="btn-action" onclick="closeOverlay()">关闭</button>
-        <button class="btn-action primary" id="btnSaveCard">保存名帖</button>
+        <button class="btn-action primary" id="btnSaveCard">下载名帖</button>
         <button class="btn-action danger" id="btnDeleteCurrent">删除</button>
       </div>
     </div>
@@ -1093,7 +1093,7 @@ function startPoetryRain() {
   for (let i = 0; i < 3; i++) setTimeout(spawnLine, i * 1200);
 }
 
-/* ── 保存名帖（Canvas 生成分享图） ── */
+/* ── 下载名帖（Canvas 生成分享图） ── */
 function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
   const chars = text.split('');
   let line = '';
