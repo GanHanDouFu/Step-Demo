@@ -577,8 +577,77 @@ body::before {
   background: rgba(194,59,34,0.06);
   border-color: var(--vermilion);
 }
+.btn-action.primary {
+  background: #c23b22;
+  color: #f5f0e8;
+  border-color: #c23b22;
+}
+.btn-action.primary:hover {
+  background: #a83220;
+  border-color: #a83220;
+}
 
-/* ── 删除确认 ── */
+/* ── 自定义确认弹窗 ── */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.confirm-overlay.active { display: flex; }
+.confirm-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(44,44,44,0.45);
+  backdrop-filter: blur(3px);
+}
+.confirm-box {
+  position: relative;
+  z-index: 2;
+  background: var(--rice-paper);
+  border: 1px solid rgba(58,47,37,0.1);
+  border-radius: 14px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+  padding: 32px 28px 24px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(12px) scale(0.97);
+  transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.confirm-box.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.confirm-icon {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  color: var(--vermilion);
+  margin-bottom: 12px;
+  opacity: 0.7;
+}
+.confirm-title {
+  font-family: var(--font-caption);
+  font-size: 1rem;
+  color: var(--ink-deep);
+  letter-spacing: 0.08em;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.confirm-actions .btn-action {
+  min-width: 90px;
+}
+
+/* ── 轻提示 ── */
 .toast {
   position: fixed;
   bottom: 30px;
@@ -693,13 +762,29 @@ body::before {
       <div class="overlay-meta" id="overlayMeta"></div>
       <div class="overlay-actions">
         <button class="btn-action" onclick="closeOverlay()">关闭</button>
-        <button class="btn-action danger" id="btnDeleteCurrent">删除此卷</button>
+        <button class="btn-action primary" id="btnSaveCard">保存名帖</button>
+        <button class="btn-action danger" id="btnDeleteCurrent">删除</button>
       </div>
     </div>
   </div>
 </div>
 
+<!-- 自定义确认弹窗 -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-backdrop" id="confirmBackdrop"></div>
+  <div class="confirm-box" id="confirmBox">
+    <div class="confirm-icon">删</div>
+    <div class="confirm-title" id="confirmTitle"></div>
+    <div class="confirm-actions">
+      <button class="btn-action" id="confirmCancel">取消</button>
+      <button class="btn-action danger" id="confirmOk">删除</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
+
+<canvas id="shareCanvas" width="1080" height="1440" style="display:none"></canvas>
 
 <script>
 let HISTORY = [];      // 全部记录
@@ -846,11 +931,39 @@ function closeOverlay() {
   }, 200);
 }
 
-/* ── 删除（带二次确认） ── */
-function confirmDelete(id) {
+/* ── 删除（自定义确认弹窗） ── */
+let _confirmResolve = null;
+
+function showConfirm(msg) {
+  return new Promise(resolve => {
+    _confirmResolve = resolve;
+    document.getElementById('confirmTitle').textContent = msg;
+    const overlay = document.getElementById('confirmOverlay');
+    overlay.classList.add('active');
+    requestAnimationFrame(() => document.getElementById('confirmBox').classList.add('active'));
+    document.getElementById('confirmOk').focus();
+  });
+}
+
+function hideConfirm(result) {
+  const box = document.getElementById('confirmBox');
+  const overlay = document.getElementById('confirmOverlay');
+  box.classList.remove('active');
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    if (_confirmResolve) { _confirmResolve(result); _confirmResolve = null; }
+  }, 200);
+}
+
+document.getElementById('confirmOk').addEventListener('click', () => hideConfirm(true));
+document.getElementById('confirmCancel').addEventListener('click', () => hideConfirm(false));
+document.getElementById('confirmBackdrop').addEventListener('click', () => hideConfirm(false));
+
+async function confirmDelete(id) {
   const item = HISTORY.find(h => h.id === id);
   const name = (item && item.result && item.result.name) || '此卷';
-  if (!confirm(`确定要删除「${name}」吗？此操作不可恢复。`)) return;
+  const ok = await showConfirm(`确定要删除「${name}」吗？此操作不可恢复。`);
+  if (!ok) return;
   doDelete(id);
 }
 
@@ -863,9 +976,10 @@ function doDelete(id) {
 }
 
 /* 清空画廊 */
-document.getElementById('btnClearAll').addEventListener('click', () => {
+document.getElementById('btnClearAll').addEventListener('click', async () => {
   if (HISTORY.length === 0) return;
-  if (!confirm(`确定清空全部 ${HISTORY.length} 位古人吗？此操作不可恢复。`)) return;
+  const ok = await showConfirm(`确定清空全部 ${HISTORY.length} 位古人吗？此操作不可恢复。`);
+  if (!ok) return;
   HISTORY = [];
   saveHistory(HISTORY);
   render();
@@ -883,7 +997,13 @@ document.getElementById('searchInput').addEventListener('input', render);
 
 /* ESC 关闭 */
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeOverlay();
+  if (e.key === 'Escape') {
+    if (document.getElementById('confirmOverlay').classList.contains('active')) {
+      hideConfirm(false);
+    } else {
+      closeOverlay();
+    }
+  }
 });
 
 /* 轻提示 */
@@ -972,6 +1092,150 @@ function startPoetryRain() {
   setInterval(spawnLine, 3000);
   for (let i = 0; i < 3; i++) setTimeout(spawnLine, i * 1200);
 }
+
+/* ── 保存名帖（Canvas 生成分享图） ── */
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const chars = text.split('');
+  let line = '';
+  let currentY = y;
+  for (let i = 0; i < chars.length; i++) {
+    const testLine = line + chars[i];
+    if (ctx.measureText(testLine).width > maxWidth && line) {
+      ctx.fillText(line, x, currentY);
+      line = chars[i];
+      currentY += lineHeight;
+    } else { line = testLine; }
+  }
+  ctx.fillText(line, x, currentY);
+  return currentY;
+}
+
+function drawSectionLine(ctx, y, W) {
+  ctx.strokeStyle = 'rgba(0,0,0,0.06)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(80, y);
+  ctx.lineTo(W - 80, y);
+  ctx.stroke();
+}
+
+function generateShareCard() {
+  const item = HISTORY.find(h => h.id === currentId);
+  if (!item) return;
+  const d = item.result || {};
+  const canvas = document.getElementById('shareCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 1080, H = 1440;
+  canvas.width = W; canvas.height = H;
+
+  // 圆角裁剪
+  const r = 28;
+  ctx.beginPath();
+  ctx.moveTo(r, 0);
+  ctx.lineTo(W - r, 0);
+  ctx.quadraticCurveTo(W, 0, W, r);
+  ctx.lineTo(W, H - r);
+  ctx.quadraticCurveTo(W, H, W - r, H);
+  ctx.lineTo(r, H);
+  ctx.quadraticCurveTo(0, H, 0, H - r);
+  ctx.lineTo(0, r);
+  ctx.quadraticCurveTo(0, 0, r, 0);
+  ctx.closePath();
+  ctx.clip();
+
+  // 背景
+  ctx.fillStyle = '#f8f6f2';
+  ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(0,0,0,0.02)';
+  ctx.lineWidth = 1;
+  for (let y = 0; y < H; y += 28) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // 标题
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  ctx.font = '22px "LXGW WenKai", serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('如果我是古人 · 穿越千年，遇见另一个自己', W / 2, 70);
+
+  // 古风名
+  ctx.fillStyle = '#2c2c2c';
+  ctx.font = '72px "Zhi Mang Xing", cursive';
+  ctx.fillText(d.name || '', W / 2, 180);
+
+  // 名字典故
+  ctx.font = '22px "LXGW WenKai", serif';
+  ctx.fillStyle = '#999';
+  ctx.textAlign = 'center';
+  wrapText(ctx, d.name_origin || '', W / 2, 225, W - 160, 34);
+  drawSectionLine(ctx, 300, W);
+
+  // 人物小传
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#555';
+  ctx.font = '28px "Zhi Mang Xing", cursive';
+  ctx.fillText('人物小传', 80, 350);
+  ctx.font = '24px "LXGW WenKai", serif';
+  ctx.fillStyle = '#555';
+  const bioEndY = wrapText(ctx, d.biography || '', 80, 395, W - 160, 42);
+  drawSectionLine(ctx, bioEndY + 30, W);
+
+  // 古人知己区域
+  const friendY = bioEndY + 70;
+  ctx.fillStyle = 'rgba(0,0,0,0.01)';
+  ctx.fillRect(60, friendY - 15, W - 120, 280);
+  ctx.strokeStyle = 'rgba(0,0,0,0.04)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(60, friendY - 15, W - 120, 280);
+
+  ctx.fillStyle = '#2c2c2c';
+  ctx.font = '28px "Zhi Mang Xing", cursive';
+  ctx.fillText('古人知己', 80, friendY + 20);
+  ctx.font = '36px "Zhi Mang Xing", cursive';
+  ctx.fillText(`知己：${d.friend || ''}`, 80, friendY + 70);
+
+  ctx.font = '20px "LXGW WenKai", serif';
+  ctx.fillStyle = '#999';
+  ctx.fillText(d.friend_era || '', 80, friendY + 105);
+
+  if (d.friend_stage) {
+    ctx.fillStyle = 'rgba(0,0,0,0.04)';
+    const stageW = ctx.measureText(d.friend_stage).width + 24;
+    ctx.fillRect(80, friendY + 120, stageW, 30);
+    ctx.fillStyle = '#555';
+    ctx.font = '18px "LXGW WenKai", serif';
+    ctx.fillText(d.friend_stage, 92, friendY + 141);
+  }
+
+  ctx.font = '22px "LXGW WenKai", serif';
+  ctx.fillStyle = '#555';
+  wrapText(ctx, d.friend_story || '', 80, friendY + 180, W - 160, 36);
+
+  if (d.friend_reason) {
+    ctx.font = '20px "LXGW WenKai", serif';
+    ctx.fillStyle = '#999';
+    wrapText(ctx, `——${d.friend_reason}`, 80, friendY + 255, W - 160, 32);
+  }
+
+  // 赠言
+  const quoteY = friendY + 320;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#2c2c2c';
+  ctx.font = '32px "Zhi Mang Xing", cursive';
+  wrapText(ctx, d.friend_quote || '', W / 2, quoteY + 40, W - 200, 48);
+
+  // 底部署名
+  ctx.textBaseline = 'alphabetic';
+  ctx.font = '18px "LXGW WenKai", serif';
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.fillText('候鸟AI创造局 · 如果我是古人', W / 2, H - 40);
+
+  // 触发下载
+  const link = document.createElement('a');
+  link.download = `古人身份-${d.name || '未知'}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+
+document.getElementById('btnSaveCard').addEventListener('click', generateShareCard);
 
 /* 启动 */
 loadPoetry().then(startPoetryRain);
