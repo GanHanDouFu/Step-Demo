@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>古人画廊 — 如果我是古人</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&family=Noto+Serif+SC:wght@400;700&family=LXGW+WenKai&display=swap" rel="stylesheet">
+<style>
+/* 墨韵流觞 — 古人画廊（复用主站视觉系统） */
+:root {
+  --ink-deep: #2c2c2c;
+  --ink-medium: #555;
+  --ink-light: #999;
+  --rice-paper: #f8f6f2;
+  --rice-warm: #f0ece6;
+  --vermilion: #c23b22;
+  --jade: #4a8c6a;
+  --gold: #b8a060;
+  --font-display: 'Zhi Mang Xing', cursive;
+  --font-body: 'LXGW WenKai', 'Noto Serif SC', serif;
+  --font-caption: 'LXGW WenKai', serif;
+  --btn-pad: 20px;
+  --btn-size: 1.8rem;
+}
+
+/* ── 键盘焦点可见：仅键盘 Tab 显示朱红环，鼠标点击不显示 ── */
+:focus-visible {
+  outline: 2px solid var(--vermilion);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible) { outline: none; }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 18px; }
+
+body {
+  font-family: var(--font-body);
+  background: #F7F0E6;
+  color: var(--ink-deep);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 80%, rgba(194,59,34,0.015) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(74,140,106,0.01) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── 飘落诗词 ── */
+.poetry-rain {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.poetry-line {
+  position: absolute;
+  font-family: var(--font-caption);
+  font-size: 0.95rem;
+  color: rgba(0,0,0,0.25);
+  white-space: nowrap;
+  animation: poetryFall linear forwards;
+  writing-mode: vertical-rl;
+  letter-spacing: 0.5em;
+  line-height: 1.6;
+}
+@keyframes poetryFall {
+  from { transform: translateY(-100%); opacity: 0; }
+  8%   { opacity: 1; }
+  85%  { opacity: 0.7; }
+  to   { transform: translateY(110vh); opacity: 0; }
+}
+
+.gallery-page {
+  position: relative;
+  z-index: 2;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+
+/* ── 顶栏 ── */
+.gallery-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(58,47,37,0.08);
+}
+
+.btn-back {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+  background: rgba(245,240,232,0.6);
+  border: 1px solid rgba(58,47,37,0.1);
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+.btn-back:hover {
+  color: var(--ink-deep);
+  border-color: var(--ink-medium);
+  background: rgba(245,240,232,0.9);
+}
+
+.gallery-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  color: var(--ink-deep);
+  letter-spacing: 0.12em;
+  flex: 1;
+}
+
+.gallery-count {
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  color: var(--ink-light);
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border: 1px solid rgba(58,47,37,0.08);
+  border-radius: 10px;
+  background: rgba(247,240,230,0.4);
+}
+
+/* ── 工具栏 ── */
+.gallery-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(58,47,37,0.06);
+}
+
+.search-box {
+  flex: 1;
+  max-width: 320px;
+  position: relative;
+}
+.search-box input {
+  width: 100%;
+  font-family: var(--font-caption);
+  font-size: 0.9rem;
+  color: var(--ink-deep);
+  background: rgba(248,246,242,0.7);
+  border: 1px solid rgba(58,47,37,0.1);
+  border-radius: 10px;
+  padding: 10px 14px 10px 38px;
+  outline: none;
+  transition: all 0.2s;
+}
+.search-box input:focus {
+  border-color: var(--ink-medium);
+  background: rgba(248,246,242,1);
+}
+.search-box::before {
+  content: '🔍';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.85rem;
+  opacity: 0.4;
+}
+
+.btn-clear {
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  color: var(--ink-light);
+  background: transparent;
+  border: 1px dashed rgba(58,47,37,0.12);
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+}
+.btn-clear:hover {
+  color: var(--vermilion);
+  border-color: var(--vermilion);
+}
+
+/* ── 网格 ── */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+/* ── 卡片 ── */
+.gallery-item {
+  background: rgba(245,240,232,0.5);
+  border: 1px solid rgba(58,47,37,0.06);
+  border-radius: 10px;
+  padding: 22px 20px 18px;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery-item::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 20px; right: 20px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(194,59,34,0.3), transparent);
+  border-radius: 1px;
+}
+
+.gallery-item:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+  border-color: rgba(58,47,37,0.1);
+  background: rgba(245,240,232,0.85);
+  transform: translateY(-3px);
+}
+.gallery-item:hover::before {
+  background: linear-gradient(90deg, transparent, rgba(194,59,34,0.5), transparent);
+}
+
+.gi-name {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--ink-deep);
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(58,47,37,0.06);
+}
+.gi-friend {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--ink-medium);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+.gi-stage {
+  display: inline-block;
+  font-family: var(--font-caption);
+  font-size: 0.72rem;
+  color: var(--vermilion);
+  letter-spacing: 0.05em;
+  padding: 3px 10px;
+  background: rgba(194,59,34,0.06);
+  border-radius: 10px;
+  margin-bottom: 4px;
+  opacity: 0.85;
+}
+.gi-date {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--ink-light);
+  margin-top: 10px;
+  opacity: 0.45;
+}
+.gi-delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: rgba(0,0,0,0.15);
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  opacity: 0;
+}
+.gallery-item:hover .gi-delete { opacity: 1; }
+.gi-delete:hover {
+  color: var(--vermilion);
+  background: rgba(194,59,34,0.06);
+}
+
+/* ── 空状态 ── */
+.gallery-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--ink-light);
+}
+.gallery-empty .empty-glyph {
+  font-family: var(--font-display);
+  font-size: 4rem;
+  color: var(--ink-light);
+  opacity: 0.3;
+  margin-bottom: 16px;
+}
+.gallery-empty p {
+  font-family: var(--font-caption);
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 24px;
+}
+.gallery-empty a {
+  font-family: var(--font-caption);
+  font-size: 0.9rem;
+  color: var(--ink-medium);
+  text-decoration: none;
+  border: 1px solid rgba(58,47,37,0.12);
+  border-radius: 10px;
+  padding: 10px 24px;
+  transition: all 0.2s;
+  display: inline-block;
+}
+.gallery-empty a:hover {
+  border-color: var(--ink-medium);
+  color: var(--ink-deep);
+  background: rgba(245,240,232,0.6);
+}
+
+/* ── 详情弹窗（卷轴风格） ── */
+.card-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.card-overlay.active { display: flex; }
+.card-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(44,44,44,0.5);
+  backdrop-filter: blur(4px);
+}
+.card-overlay-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.overlay-card {
+  position: relative;
+  background: var(--rice-paper);
+  border: 1px solid rgba(58,47,37,0.1);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  padding: 32px 28px 24px;
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+  transition: all 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+.overlay-card.active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.overlay-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--ink-light);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+.overlay-close:hover {
+  color: var(--vermilion);
+  background: rgba(194,59,34,0.06);
+}
+
+.ancient-name-section { text-align: center; margin-bottom: 24px; }
+.ancient-name {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  color: var(--ink-deep);
+  letter-spacing: 0.15em;
+  margin-bottom: 10px;
+  padding-bottom: 14px;
+  position: relative;
+}
+.ancient-name::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: var(--vermilion);
+  margin: 14px auto 0;
+  opacity: 0.7;
+}
+.name-origin {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--ink-medium);
+  line-height: 1.7;
+  font-style: italic;
+}
+
+.biography-section,
+.friend-section,
+.scene-section { margin-bottom: 22px; }
+
+.section-label {
+  font-family: var(--font-caption);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--vermilion);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding-left: 12px;
+  border-left: 2px solid var(--vermilion);
+  margin-bottom: 12px;
+  opacity: 0.85;
+  border-radius: 0 4px 4px 0;
+}
+.biography {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--ink-deep);
+  line-height: 1.9;
+  text-indent: 2em;
+}
+.friend-name {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--ink-deep);
+  margin-bottom: 6px;
+}
+.friend-meta {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--ink-light);
+  margin-bottom: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.friend-era,
+.friend-stage {
+  padding: 3px 10px;
+  border: 1px solid rgba(58,47,37,0.08);
+  border-radius: 10px;
+  background: rgba(247,240,230,0.4);
+  letter-spacing: 0.05em;
+}
+.friend-era { color: var(--ink-medium); }
+.friend-stage { color: var(--vermilion); opacity: 0.8; }
+.friend-story {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink-deep);
+  line-height: 1.8;
+  margin-bottom: 8px;
+}
+.friend-reason {
+  font-family: var(--font-caption);
+  font-size: 0.82rem;
+  color: var(--jade);
+  font-style: italic;
+}
+.scene-text {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: var(--ink-deep);
+  line-height: 1.9;
+  padding: 16px 20px;
+  background: linear-gradient(to right, rgba(201,169,78,0.04), transparent 30%), rgba(247,240,230,0.3);
+  border-left: 2px solid rgba(201,169,78,0.25);
+  border-radius: 0 8px 8px 0;
+}
+.quote-section {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(58,47,37,0.08);
+}
+.friend-quote {
+  font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+  font-size: 1.1rem;
+  color: var(--ink-medium);
+  letter-spacing: 0.08em;
+  line-height: 1.8;
+  position: relative;
+  display: inline-block;
+  padding: 0 20px;
+}
+.friend-quote::before {
+  content: '\300C';
+  position: absolute;
+  left: 0;
+  top: -2px;
+  color: rgba(194,59,34,0.2);
+  font-size: 1.4em;
+}
+.friend-quote::after {
+  content: '\300D';
+  position: absolute;
+  right: 0;
+  bottom: -2px;
+  color: rgba(194,59,34,0.2);
+  font-size: 1.4em;
+}
+
+.overlay-meta {
+  font-family: var(--font-caption);
+  font-size: 0.75rem;
+  color: var(--ink-light);
+  text-align: center;
+  margin-top: 20px;
+  opacity: 0.6;
+}
+
+.overlay-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  justify-content: center;
+}
+.btn-action {
+  font-family: var(--font-caption);
+  font-size: 0.88rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-medium);
+  background: rgba(245,240,232,0.6);
+  border: 1px solid rgba(58,47,37,0.12);
+  border-radius: 10px;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-action:hover {
+  border-color: var(--ink-medium);
+  color: var(--ink-deep);
+}
+.btn-action.danger {
+  color: var(--vermilion);
+  border-color: rgba(194,59,34,0.25);
+}
+.btn-action.danger:hover {
+  background: rgba(194,59,34,0.06);
+  border-color: var(--vermilion);
+}
+
+/* ── 删除确认 ── */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  font-family: var(--font-caption);
+  font-size: 0.88rem;
+  color: var(--ink-deep);
+  background: var(--rice-paper);
+  border: 1px solid rgba(58,47,37,0.12);
+  border-radius: 10px;
+  padding: 12px 24px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  z-index: 200;
+  opacity: 0;
+  transition: all 0.3s;
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 48px 0 32px;
+  font-family: var(--font-caption);
+  font-size: 0.8rem;
+  color: var(--ink-light);
+  letter-spacing: 0.15em;
+  opacity: 0.5;
+}
+
+/* ── 移动端 ── */
+@media (max-width: 640px) {
+  :root { --btn-pad: 14px; --btn-size: 1.2rem; }
+  .gallery-page { padding: 24px 16px 16px; }
+  .gallery-topbar { margin-bottom: 18px; gap: 10px; }
+  .gallery-grid { grid-template-columns: 1fr; gap: 10px; }
+  .gallery-item { padding: 14px 12px; }
+  .gallery-item .gi-name { font-size: 1.5rem; }
+  .gi-delete { opacity: 1; }
+  .gallery-toolbar { flex-direction: column; align-items: stretch; }
+  .search-box { max-width: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- 飘落诗词 -->
+<div class="poetry-rain" id="poetryRain"></div>
+
+<div class="gallery-page">
+  <div class="gallery-topbar">
+    <button class="btn-back" id="btnBack">← 返回</button>
+    <div class="gallery-title">古人画廊</div>
+    <div class="gallery-count" id="galleryCount"></div>
+  </div>
+
+  <div class="gallery-toolbar" id="galleryToolbar" style="display:none">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="搜索古名 / 知己…">
+    </div>
+    <button class="btn-clear" id="btnClearAll">清空画廊</button>
+  </div>
+
+  <div class="gallery-grid" id="galleryGrid"></div>
+
+  <div class="gallery-empty" id="galleryEmpty" style="display:none">
+    <div class="empty-glyph">空</div>
+    <p>画廊尚无一卷，去创造你的第一位古人吧</p>
+    <a href="/">前往造像</a>
+  </div>
+
+  <footer class="footer">
+    <div>候鸟AI创造局 · 如果我是古人</div>
+  </footer>
+</div>
+
+<!-- 详情弹窗 -->
+<div class="card-overlay" id="cardOverlay">
+  <div class="card-overlay-backdrop" onclick="closeOverlay()"></div>
+  <div class="card-overlay-content">
+    <div class="overlay-card" id="overlayCard">
+      <button class="overlay-close" onclick="closeOverlay()" title="关闭">&times;</button>
+      <div class="ancient-name-section">
+        <div class="ancient-name" id="ancientName"></div>
+        <div class="name-origin" id="nameOrigin"></div>
+      </div>
+      <div class="biography-section">
+        <div class="section-label">人物小传</div>
+        <div class="biography" id="biography"></div>
+      </div>
+      <div class="friend-section">
+        <div class="section-label">古人知己</div>
+        <div class="friend-name" id="friendName"></div>
+        <div class="friend-meta">
+          <span class="friend-era" id="friendEra"></span>
+          <span class="friend-stage" id="friendStage"></span>
+        </div>
+        <div class="friend-story" id="friendStory"></div>
+        <div class="friend-reason" id="friendReason"></div>
+      </div>
+      <div class="scene-section" id="sceneSection">
+        <div class="section-label">相遇那一刻</div>
+        <div class="scene-text" id="sceneText"></div>
+      </div>
+      <div class="quote-section">
+        <div class="friend-quote" id="friendQuote"></div>
+      </div>
+      <div class="overlay-meta" id="overlayMeta"></div>
+      <div class="overlay-actions">
+        <button class="btn-action" onclick="closeOverlay()">关闭</button>
+        <button class="btn-action danger" id="btnDeleteCurrent">删除此卷</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let HISTORY = [];      // 全部记录
+let currentId = null;  // 当前查看详情的记录 id
+
+/* ── 加载历史 ── */
+async function loadHistory() {
+  try {
+    const res = await fetch('/api/history');
+    HISTORY = await res.json();
+    render();
+  } catch (e) {
+    console.error('加载失败', e);
+    HISTORY = [];
+    render();
+  }
+}
+
+/* ── 渲染列表 ── */
+function render() {
+  const grid = document.getElementById('galleryGrid');
+  const count = document.getElementById('galleryCount');
+  const empty = document.getElementById('galleryEmpty');
+  const toolbar = document.getElementById('galleryToolbar');
+
+  const kw = document.getElementById('searchInput').value.trim().toLowerCase();
+  const list = kw
+    ? HISTORY.filter(item => {
+        const r = item.result || {};
+        return [r.name, r.friend, r.friend_era, r.biography].some(v => (v || '').toLowerCase().includes(kw));
+      })
+    : HISTORY;
+
+  count.textContent = HISTORY.length ? `共 ${HISTORY.length} 位古人` : '';
+
+  if (HISTORY.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = '';
+    toolbar.style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  toolbar.style.display = '';
+
+  if (list.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--ink-light);font-family:var(--font-caption)">未寻得相符古人</div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(item => {
+    const r = item.result || {};
+    const era = r.friend_era ? r.friend_era.split('，')[0].split('。')[0] : '';
+    return `
+    <div class="gallery-item" onclick="showDetail('${item.id}')">
+      <button class="gi-delete" onclick="event.stopPropagation();confirmDelete('${item.id}')" title="删除">&times;</button>
+      <div class="gi-name">${r.name || '未知'}</div>
+      <div class="gi-friend">知己：${r.friend || '未知'}${era ? '（' + era + '）' : ''}</div>
+      ${r.friend_stage ? `<div class="gi-stage">${r.friend_stage}</div>` : ''}
+      <div class="gi-date">${new Date(item.timestamp).toLocaleDateString('zh-CN')}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ── 查看详情 ── */
+/* ── 弹窗焦点陷阱：打开时聚焦关闭键、锁背景滚动、Tab 在弹窗内循环 ── */
+let _lastFocused = null;
+function trapFocus(overlayEl) {
+  _lastFocused = document.activeElement;
+  document.body.style.overflow = 'hidden';
+  const closer = overlayEl.querySelector('.overlay-close, [data-close]');
+  if (closer) closer.focus();
+
+  const handler = (e) => {
+    if (e.key !== 'Tab') return;
+    const focusables = overlayEl.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const visible = Array.from(focusables).filter(el => el.offsetParent !== null);
+    if (visible.length === 0) return;
+    const first = visible[0];
+    const last = visible[visible.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  };
+  overlayEl.addEventListener('keydown', handler);
+  overlayEl._trapHandler = handler;
+}
+function releaseFocus(overlayEl) {
+  document.body.style.overflow = '';
+  if (overlayEl._trapHandler) {
+    overlayEl.removeEventListener('keydown', overlayEl._trapHandler);
+    overlayEl._trapHandler = null;
+  }
+  if (_lastFocused && _lastFocused.focus) _lastFocused.focus();
+}
+
+function showDetail(id) {
+  const item = HISTORY.find(h => h.id === id);
+  if (!item) return;
+  const r = item.result || {};
+  currentId = id;
+
+  document.getElementById('ancientName').textContent = r.name || '';
+  document.getElementById('nameOrigin').textContent = r.name_origin || '';
+  document.getElementById('biography').textContent = r.biography || '';
+  document.getElementById('friendName').textContent = r.friend ? `知己：${r.friend}` : '';
+  document.getElementById('friendEra').textContent = r.friend_era || '';
+  document.getElementById('friendStage').textContent = r.friend_stage || '';
+  document.getElementById('friendStory').textContent = r.friend_story || '';
+  document.getElementById('friendReason').textContent = r.friend_reason ? `——${r.friend_reason}` : '';
+  document.getElementById('friendQuote').textContent = r.friend_quote || '';
+
+  const sceneSection = document.getElementById('sceneSection');
+  if (r.scene) {
+    document.getElementById('sceneText').textContent = r.scene;
+    sceneSection.style.display = 'block';
+  } else {
+    sceneSection.style.display = 'none';
+  }
+
+  document.getElementById('overlayMeta').textContent =
+    '落笔于 ' + new Date(item.timestamp).toLocaleString('zh-CN');
+
+  const overlay = document.getElementById('cardOverlay');
+  overlay.classList.add('active');
+  // 触发卷轴展开动画
+  requestAnimationFrame(() => {
+    document.getElementById('overlayCard').classList.add('active');
+    trapFocus(overlay);
+  });
+}
+
+function closeOverlay() {
+  const overlay = document.getElementById('cardOverlay');
+  document.getElementById('overlayCard').classList.remove('active');
+  setTimeout(() => {
+    overlay.classList.remove('active');
+    currentId = null;
+    releaseFocus(overlay);
+  }, 200);
+}
+
+/* ── 删除（带二次确认） ── */
+function confirmDelete(id) {
+  const item = HISTORY.find(h => h.id === id);
+  const name = (item && item.result && item.result.name) || '此卷';
+  if (!confirm(`确定要删除「${name}」吗？此操作不可恢复。`)) return;
+  doDelete(id);
+}
+
+async function doDelete(id) {
+  try {
+    await fetch(`/api/history/${id}`, { method: 'DELETE' });
+    HISTORY = HISTORY.filter(h => h.id !== id);
+    if (currentId === id) closeOverlay();
+    render();
+    toast('已删除一卷');
+  } catch (e) {
+    console.error('删除失败', e);
+    toast('删除失败，请重试');
+  }
+}
+
+/* 清空画廊 */
+document.getElementById('btnClearAll').addEventListener('click', () => {
+  if (HISTORY.length === 0) return;
+  if (!confirm(`确定清空全部 ${HISTORY.length} 位古人吗？此操作不可恢复。`)) return;
+  Promise.all(HISTORY.map(h => fetch(`/api/history/${h.id}`, { method: 'DELETE' })))
+    .then(() => { HISTORY = []; render(); toast('画廊已清空'); })
+    .catch(e => { console.error(e); toast('清空未完成，请重试'); });
+});
+
+/* 详情页删除按钮 */
+document.getElementById('btnDeleteCurrent').addEventListener('click', () => {
+  if (!currentId) return;
+  confirmDelete(currentId);
+});
+
+/* 搜索 */
+document.getElementById('searchInput').addEventListener('input', render);
+
+/* ESC 关闭 */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeOverlay();
+});
+
+/* 轻提示 */
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+/* 返回：优先关闭新标签页（回到原主页标签页），关不掉则跳主页 */
+document.getElementById('btnBack').addEventListener('click', () => {
+  // window.open 打开的窗口可被 close() 关闭
+  try {
+    if (window.opener && !window.opener.closed) {
+      window.opener.focus();
+      window.close();
+      return;
+    }
+  } catch (e) {}
+  // 退路：跳回主页（主页会自动跳过欢迎页）
+  window.location.href = '/';
+});
+
+/* ── 飘落诗词 ── */
+let poetryData = [];
+let poetryIndex = 0;
+
+async function loadPoetry() {
+  try {
+    const res = await fetch('/api/poetry');
+    poetryData = await res.json();
+    for (let i = poetryData.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [poetryData[i], poetryData[j]] = [poetryData[j], poetryData[i]];
+    }
+    poetryIndex = 0;
+  } catch (e) { console.error('诗词加载失败', e); }
+}
+
+function getNextPoetry() {
+  if (poetryData.length === 0) return null;
+  const p = poetryData[poetryIndex];
+  poetryIndex = (poetryIndex + 1) % poetryData.length;
+  if (poetryIndex === 0) {
+    for (let i = poetryData.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [poetryData[i], poetryData[j]] = [poetryData[j], poetryData[i]];
+    }
+  }
+  return p;
+}
+
+function startPoetryRain() {
+  const container = document.getElementById('poetryRain');
+  function getEdgePositions() {
+    const W = window.innerWidth;
+    const contentW = Math.min(960, W - 48);
+    const margin = (W - contentW) / 2;
+    const leftMax = Math.max(0, margin - 40);
+    const rightMin = Math.min(W, W - margin + 40);
+    return { leftMax, rightMin };
+  }
+  let side = 0;
+  function spawnLine() {
+    const p = getNextPoetry();
+    if (!p) return;
+    const el = document.createElement('div');
+    el.className = 'poetry-line';
+    el.textContent = p.text;
+    const { leftMax, rightMin } = getEdgePositions();
+    side = 1 - side;
+    if (leftMax < 60) return;
+    if (side === 0) {
+      el.style.left = (10 + Math.random() * (leftMax - 30)) + 'px';
+    } else {
+      el.style.left = (rightMin + 10 + Math.random() * (leftMax - 30)) + 'px';
+    }
+    el.style.fontSize = (0.8 + Math.random() * 0.3) + 'rem';
+    el.style.animationDuration = (30 + Math.random() * 30) + 's';
+    el.style.opacity = 0.12 + Math.random() * 0.15;
+    container.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+  setInterval(spawnLine, 3000);
+  for (let i = 0; i < 3; i++) setTimeout(spawnLine, i * 1200);
+}
+
+/* 启动 */
+loadPoetry().then(startPoetryRain);
+loadHistory();
+</script>
+</body>
+</html>

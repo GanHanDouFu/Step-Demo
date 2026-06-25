@@ -21,7 +21,24 @@
   --font-display: 'Zhi Mang Xing', cursive;
   --font-body: 'LXGW WenKai', 'Noto Serif SC', serif;
   --font-caption: 'LXGW WenKai', serif;
+  /* 按钮统一尺寸：两个主操作按钮共享，桌面/手机各一套 */
+  --btn-pad: 20px;
+  --btn-size: 1.8rem;
 }
+
+/* ── 键盘焦点可见：仅键盘 Tab 时显示朱红焦点环，鼠标点击不显示 ── */
+:focus-visible {
+  outline: 2px solid var(--vermilion);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+/* 朱红实心按钮用墨色环，避免在朱红上看不清 */
+.btn-submit:focus-visible {
+  outline-color: var(--ink-deep);
+  outline-offset: 2px;
+}
+/* 移除鼠标点击产生的默认轮廓 */
+:focus:not(:focus-visible) { outline: none; }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; font-size: 18px; }
@@ -73,7 +90,7 @@ body::before {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding-top: 12vh;
+  padding-top: clamp(60px, 12vh, 140px);
   z-index: 2;
   pointer-events: none;
   text-align: center;
@@ -115,7 +132,7 @@ body::before {
 /* 按钮固定在底部 */
 .splash-enter {
   position: absolute;
-  bottom: 16vh;
+  bottom: clamp(40px, 12vh, 120px);
   left: 0;
   right: 0;
   text-align: center;
@@ -132,12 +149,14 @@ body::before {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0;
-  transition: color 0.3s;
+  padding: 8px 0;
+  transition: color 0.3s, opacity 0.3s;
   opacity: 0.7;
+  border-bottom: 1px solid rgba(58,47,37,0.15);
 }
 .splash-enter-btn:hover {
   opacity: 1;
+  border-bottom-color: rgba(58,47,37,0.4);
 }
 
 @keyframes brushIn {
@@ -221,8 +240,10 @@ body::before {
 /* 诗词展示 */
 .header-poetry {
   margin-top: 24px;
-  padding: 12px 0;
+  padding: 16px 20px;
   text-align: center;
+  border-top: 1px solid rgba(58,47,37,0.06);
+  border-bottom: 1px solid rgba(58,47,37,0.06);
 }
 .header-poetry .poetry-text {
   font-family: var(--font-display);
@@ -248,6 +269,16 @@ body::before {
   position: relative;
   box-shadow: 0 1px 4px rgba(0,0,0,0.03);
 }
+.input-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 36px;
+  right: 36px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(194,59,34,0.25), transparent);
+  border-radius: 1px;
+}
 .form-group { margin-bottom: 24px; }
 .form-label {
   display: block;
@@ -270,9 +301,9 @@ body::before {
   transition: all 0.3s;
 }
 .form-input:focus {
-  border-color: var(--ink-deep);
+  border-color: var(--ink-medium);
   background: rgba(245,240,232,0.9);
-  box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
+  box-shadow: 0 0 0 3px rgba(58,47,37,0.06);
 }
 .form-input::placeholder {
   color: rgba(0,0,0,0.25);
@@ -340,10 +371,11 @@ textarea.form-input {
 }
 .select-trigger.open::after { transform: rotate(180deg); }
 .select-trigger:hover, .select-trigger.open {
-  border-color: var(--ink-deep);
+  border-color: var(--ink-medium);
   background: rgba(245,240,232,0.9);
 }
-.select-trigger .placeholder { color: rgba(0,0,0,0.25); font-style: italic; }
+.select-trigger .placeholder,
+.select-trigger::placeholder { color: rgba(0,0,0,0.25); font-style: italic; }
 
 .select-menu {
   display: none;
@@ -387,10 +419,10 @@ textarea.form-input {
 .btn-submit {
   display: block;
   width: 100%;
-  padding: 20px;
+  padding: var(--btn-pad, 20px);
   margin-top: 32px;
   font-family: var(--font-display);
-  font-size: 1.8rem;
+  font-size: var(--btn-size, 1.8rem);
   letter-spacing: 0.2em;
   color: #f5f0e8;
   background: #c23b22;
@@ -459,13 +491,24 @@ textarea.form-input {
 .overlay-loading.active { display: block; }
 
 .ink-grind {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   margin: 0 auto 20px;
-  border: 3px solid rgba(58,47,37,0.1);
-  border-top-color: var(--ink-medium);
+  border: 2px solid rgba(58,47,37,0.06);
+  border-top-color: rgba(58,47,37,0.35);
+  border-right-color: rgba(58,47,37,0.15);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 1s cubic-bezier(0.4,0,0.2,1) infinite;
+  position: relative;
+}
+.ink-grind::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1.5px solid transparent;
+  border-top-color: var(--vermilion);
+  border-radius: 50%;
+  animation: spin 0.7s cubic-bezier(0.4,0,0.2,1) infinite reverse;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -482,6 +525,10 @@ textarea.form-input {
   color: var(--vermilion);
   text-align: center;
   margin-top: 12px;
+  padding: 10px 16px;
+  background: rgba(194,59,34,0.06);
+  border: 1px solid rgba(194,59,34,0.12);
+  border-radius: 8px;
   opacity: 0;
   transition: opacity 0.3s;
   min-height: 0;
@@ -515,8 +562,9 @@ textarea.form-input {
   line-height: 1;
 }
 .overlay-close:hover {
-  background: rgba(0,0,0,0.12);
+  background: rgba(0,0,0,0.1);
   color: var(--ink-deep);
+  transform: scale(1.05);
 }
 
 .overlay-card .identity-card {
@@ -787,68 +835,158 @@ textarea.form-input {
 
 /* ── 响应式 ── */
 
-@media (max-width: 600px) {
-  html { font-size: 16px; }
-  .container { padding: 20px 16px 16px; }
-  .title { font-size: 3rem; }
-  .splash-overlay { padding-top: 10vh; }
-  .splash-title { font-size: 3.8rem; letter-spacing: 0.12em; }
-  .splash-sub { font-size: 1rem; letter-spacing: 0.2em; }
-  .splash-desc { font-size: 0.95rem; padding: 0 24px; max-width: 320px; }
-  .splash-enter { bottom: 14vh; }
-  .splash-enter-btn { font-size: 2rem; }
-  .input-card { padding: 28px 20px; }
-  .card-content { padding: 32px 24px 28px; }
-  .ancient-name { font-size: 2rem; letter-spacing: 0.15em; }
-  .friend-header { flex-direction: column; gap: 8px; }
-  .scene-text { padding: 16px 18px; }
+/* ── 流式排版 ── */
+.title { font-size: clamp(2.4rem, 6vw, 4.5rem); }
+.splash-title { font-size: clamp(2.4rem, 10vw, 6.5rem); }
+.splash-sub { font-size: clamp(0.9rem, 2.5vw, 1.3rem); }
+.splash-desc { font-size: clamp(0.85rem, 2vw, 1.1rem); }
+.splash-enter-btn { font-size: clamp(1.4rem, 4vw, 2.5rem); }
+.input-card { padding: clamp(20px, 4vw, 40px) clamp(18px, 4vw, 36px); }
+.form-label { font-size: clamp(0.9rem, 2vw, 1.1rem); }
+.card-content { padding: clamp(24px, 5vw, 48px) clamp(18px, 4vw, 44px); }
+.ancient-name { font-size: clamp(1.6rem, 5vw, 2.6rem); }
+.name-origin { font-size: clamp(0.8rem, 1.8vw, 0.88rem); }
+.section-label { font-size: clamp(0.65rem, 1.5vw, 0.72rem); }
+.biography { font-size: clamp(0.9rem, 2vw, 0.98rem); }
+.friend-name { font-size: clamp(1rem, 2.5vw, 1.25rem); }
+.friend-story { font-size: clamp(0.88rem, 2vw, 0.95rem); }
+.friend-quote { font-size: clamp(0.95rem, 2.2vw, 1.1rem); }
+.scene-text { font-size: clamp(0.9rem, 2vw, 1rem); padding: clamp(14px, 3vw, 20px) clamp(16px, 3vw, 24px); }
+.gallery-title { font-size: clamp(1.3rem, 3vw, 1.8rem); }
+.header-poetry { font-size: clamp(0.8rem, 1.8vw, 0.95rem); }
+
+/* ── 平板 ── */
+@media (max-width: 768px) {
   .select-row { flex-direction: column; gap: 12px; }
-  .gallery-grid { grid-template-columns: 1fr; }
-  .actions { flex-direction: column; }
-  .gallery-section { margin: 48px 0 0; }
+  .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+  .overlay-actions { flex-direction: row; }
+  .overlay-actions .btn-action { padding: 14px 14px; }
+  .friend-header { flex-direction: column; gap: 8px; }
+}
+
+/* ── 手机 ── */
+@media (max-width: 480px) {
+  .header { padding: 28px 0 20px; }
+  .header::after { margin: 14px auto 0; }
+  .header-poetry { margin-top: 12px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 0.85rem; margin-bottom: 6px; }
+  .select-row { gap: 10px; margin-bottom: 4px; }
+  /* 手机端统一缩小按钮尺寸（改变量值，所有引用变量的按钮自动同步） */
+  :root { --btn-pad: 14px; --btn-size: 1.2rem; }
+  .btn-submit, .btn-gallery { font-size: var(--btn-size); padding: var(--btn-pad); }
+  .gallery-view { padding: 24px 16px 16px; }
+  .gallery-topbar { margin-bottom: 18px; }
+  .gallery-grid { grid-template-columns: 1fr; gap: 10px; }
+  .gallery-item { padding: 14px 12px; }
+  .gallery-item .gi-name { font-size: 1.3rem; }
+  .footer { padding: 32px 0 24px; }
+  .overlay-loading { padding: 40px 20px; }
+  .overlay-actions { flex-direction: column; gap: 8px; }
+  .overlay-actions .btn-action { font-size: 0.9rem; padding: 12px; }
+  .card-overlay-content { width: 95%; }
+  .settings-toggle { width: 42px; height: 42px; font-size: 1.3rem; }
 }
 
 /* ── 画廊区域 ── */
-.gallery-section {
-  margin: 72px 0 0;
-  display: none;
+/* ── 画廊按钮（墨色描边，呼应主按钮的朱红形成一红一墨的主次层次） ── */
+/* padding/字号与 .btn-submit 共享变量，确保两按钮尺寸始终一致 */
+.btn-gallery {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding: var(--btn-pad);
+  font-family: var(--font-display);
+  font-size: var(--btn-size);
+  letter-spacing: 0.2em;
+  color: #f5f0e8;
+  background: #2d5e46;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s ease;
+  box-shadow: 0 2px 8px rgba(45,94,70,0.25);
 }
-.gallery-section.active { display: block; }
+.btn-gallery:hover {
+  background: #234b38;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45,94,70,0.35);
+}
+.btn-gallery:active { transform: translateY(0); }
 
-.gallery-header {
+/* ── 画廊视图 ── */
+.gallery-view {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 24px 20px;
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+
+.gallery-topbar {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
+  align-items: center;
+  gap: 16px;
   margin-bottom: 28px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(58,47,37,0.08);
+}
+
+.btn-back {
+  font-family: var(--font-caption);
+  font-size: 0.85rem;
+  color: var(--ink-light);
+  background: rgba(245,240,232,0.6);
+  border: 1px solid rgba(58,47,37,0.1);
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+.btn-back:hover {
+  border-color: var(--ink-medium);
+  color: var(--ink-deep);
+  background: rgba(245,240,232,0.9);
 }
 
 .gallery-title {
   font-family: var(--font-display);
-  font-size: 1.8rem;
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
   color: var(--ink-deep);
   letter-spacing: 0.1em;
+  flex: 1;
 }
 
 .gallery-count {
   font-family: var(--font-caption);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--ink-light);
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border: 1px solid rgba(58,47,37,0.08);
+  border-radius: 10px;
+  background: rgba(247,240,230,0.4);
 }
 
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 20px;
+  gap: 16px;
 }
 
 /* ── 画廊卡片 ── */
 .gallery-item {
-  background: #f5f0e8;
-  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(245,240,232,0.6);
+  border: 1px solid rgba(58,47,37,0.06);
   border-radius: 10px;
-  padding: 24px 20px;
+  padding: 20px 18px;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -863,12 +1001,14 @@ textarea.form-input {
   right: 0;
   height: 2px;
   background: var(--vermilion);
-  opacity: 0.15;
+  opacity: 0.12;
 }
 
 .gallery-item:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-  border-color: rgba(0,0,0,0.1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+  border-color: rgba(58,47,37,0.12);
+  background: rgba(245,240,232,0.9);
+  transform: translateY(-2px);
 }
 
 .gallery-item:hover::before {
@@ -885,17 +1025,27 @@ textarea.form-input {
 
 .gi-friend {
   font-family: var(--font-caption);
-  font-size: 0.88rem;
+  font-size: 0.82rem;
   color: var(--ink-medium);
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.gi-stage {
+  font-family: var(--font-caption);
+  font-size: 0.78rem;
+  color: var(--vermilion);
+  letter-spacing: 0.05em;
   margin-bottom: 4px;
+  opacity: 0.8;
 }
 
 .gi-date {
   font-family: var(--font-caption);
   font-size: 0.75rem;
   color: var(--ink-light);
-  margin-top: 12px;
-  opacity: 0.6;
+  margin-top: 8px;
+  opacity: 0.5;
 }
 
 .gi-delete {
@@ -923,7 +1073,8 @@ textarea.form-input {
 
 .gi-delete:hover {
   color: var(--vermilion);
-  background: rgba(194,59,34,0.06);
+  background: rgba(194,59,34,0.08);
+  transform: scale(1.1);
 }
 
 /* ── Footer ── */
@@ -962,11 +1113,6 @@ textarea.form-input {
 }
 
 .overlay-actions { flex-wrap: wrap; }
-@media (max-width: 600px) {
-  .overlay-actions .btn-action { font-size: 0.95rem; padding: 14px 12px; }
-  .settings-toggle { width: 44px; height: 44px; font-size: 1.4rem; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -983,7 +1129,7 @@ textarea.form-input {
   <div class="splash-overlay">
     <div class="splash-title">如果我是古人</div>
     <div class="splash-sub">穿越千年，遇见另一个自己</div>
-    <div class="splash-desc">写下你的性格、志趣与故事，<br>看看千年前的你，会是诗客、侠士、谋臣，还是隐者。</div>
+    <div class="splash-desc">写下你的性格、志趣与故事，<br>看看千年前的你，<br><span style="white-space:nowrap">会是诗客、侠士、谋臣，还是隐者。</span></div>
     <div class="splash-enter">
       <button class="splash-enter-btn" onclick="dismissSplash()">开始</button>
     </div>
@@ -1012,7 +1158,7 @@ textarea.form-input {
   <div class="input-card" id="inputSection">
     <div class="form-group">
       <label class="form-label">你的姓名</label>
-      <input type="text" class="form-input" id="nameInput" placeholder="如：李明（可选，留空则随机）" maxlength="20">
+      <input type="text" class="form-input" id="nameInput" placeholder="输入姓名（可选）" maxlength="20">
     </div>
     <div class="form-group">
       <label class="form-label">你的性格</label>
@@ -1052,15 +1198,7 @@ textarea.form-input {
     </div>
     <button class="btn-submit" id="submitBtn" onclick="generate()">落笔生花</button>
     <div class="error-msg" id="errorMsg"></div>
-  </div>
-
-  <!-- 历史画廊 -->
-  <div class="gallery-section" id="gallerySection">
-    <div class="gallery-header">
-      <div class="gallery-title">古人画廊</div>
-      <div class="gallery-count" id="galleryCount"></div>
-    </div>
-    <div class="gallery-grid" id="galleryGrid"></div>
+    <button class="btn-gallery" onclick="openGallery()">古人画廊</button>
   </div>
 
   <footer class="footer">
@@ -1075,7 +1213,7 @@ textarea.form-input {
     <!-- Loading -->
     <div class="overlay-loading" id="loading">
       <div class="ink-grind"></div>
-      <p class="loading-text">落笔生花中…</p>
+      <p class="loading-text" id="loadingText">正在研墨…</p>
     </div>
     <!-- 结果卡片 -->
     <div class="overlay-card" id="overlayCard">
@@ -1376,6 +1514,7 @@ function dismissSplash() {
   const splash = document.getElementById('splash');
   splash.classList.add('fade-out');
   document.getElementById('mainContent').style.display = 'block';
+  try { sessionStorage.setItem('entered', '1'); } catch (e) {}
   history.pushState({ page: 'main' }, '', '#main');
   setTimeout(() => { splash.style.display = 'none'; startPoetryRain(); }, 1200);
 }
@@ -1526,7 +1665,7 @@ const personalityDD = createCustomDropdown('personalityDropdown', [
   { value: '温柔体贴，善解人意，总是为别人着想' },
   { value: '幽默风趣，喜欢逗人开心，但独处时也有安静的一面' },
   { value: '倔强执着，认定的事不会轻易放弃，有点固执' },
-], '输入或点击下拉选择…', true);
+], '选择或输入性格…', true);
 
 const hobbiesDD = createCustomDropdown('hobbiesDropdown', [
   { value: '读闲书、喝咖啡、深夜散步、发呆' },
@@ -1541,10 +1680,10 @@ const hobbiesDD = createCustomDropdown('hobbiesDropdown', [
   { value: '养花、养猫、养狗、和自然相处' },
   { value: '写字、抄经、焚香、泡茶' },
   { value: '社交、聚会、认识新朋友、聊天' },
-], '输入或点击下拉选择…', true);
+], '选择或输入爱好…', true);
 
 const mbtiDD = createCustomDropdown('mbtiDropdown', [
-  { value: '', label: '不确定 / 跳过' },
+  { value: '', label: '不选' },
   { value: 'INTJ', label: 'INTJ', sub: '建筑师' },
   { value: 'INTP', label: 'INTP', sub: '逻辑学家' },
   { value: 'ENTJ', label: 'ENTJ', sub: '指挥官' },
@@ -1561,7 +1700,7 @@ const mbtiDD = createCustomDropdown('mbtiDropdown', [
   { value: 'ISFP', label: 'ISFP', sub: '探险家' },
   { value: 'ESTP', label: 'ESTP', sub: '企业家' },
   { value: 'ESFP', label: 'ESFP', sub: '表演者' },
-], '不确定 / 跳过', false);
+], '不选', false);
 
 const zodiacDD = createCustomDropdown('zodiacDropdown', [
   { value: '', label: '不选' },
@@ -1610,7 +1749,7 @@ async function generate() {
   const chineseZodiac = chineseZodiacDD.getValue();
 
   if (!personality && !hobbies && !mbti) {
-    showError('请至少填写性格、爱好，或选择 MBTI');
+    showError('请先填写「性格」或「爱好」，或选择一个 MBTI 类型，再落笔');
     return;
   }
 
@@ -1630,9 +1769,13 @@ async function generate() {
     if (!res.ok) throw new Error(data.error || '请求失败');
     currentResult = data;
     renderResult(data);
-    loadGallery();
+    refreshGalleryBtn();
   } catch (err) {
-    showError(err.message);
+    // 区分网络中断与服务端错误，给出可操作的提示
+    const msg = (err.message === 'Failed to fetch' || err.name === 'TypeError')
+      ? '网络连接中断，请检查网络后重试'
+      : (err.message || '生成失败，请稍后重试');
+    showError(msg);
   } finally {
     setLoading(false);
   }
@@ -1660,6 +1803,7 @@ function renderResult(data) {
   // 在覆盖层中显示卡片
   document.getElementById('loading').classList.remove('active');
   document.getElementById('overlayCard').classList.add('active');
+  trapFocus(document.getElementById('cardOverlay'));
 }
 
 /* ── 分享卡片 ── */
@@ -1785,66 +1929,101 @@ function drawSectionLine(ctx, y, W) {
   ctx.stroke();
 }
 
-/* ── 历史画廊 ── */
-async function loadGallery() {
+/* ── 历史画廊（独立页面，新开标签页） ── */
+async function refreshGalleryBtn() {
   try {
     const res = await fetch('/api/history');
     const history = await res.json();
-    const section = document.getElementById('gallerySection');
-    const grid = document.getElementById('galleryGrid');
-    const count = document.getElementById('galleryCount');
-    if (history.length === 0) { section.classList.remove('active'); return; }
-    section.classList.add('active');
-    count.textContent = `共 ${history.length} 位古人`;
-    grid.innerHTML = history.map(item => `
-      <div class="gallery-item" onclick='showHistory(${JSON.stringify(item.result)})'>
-        <button class="gi-delete" onclick="event.stopPropagation();deleteHistory('${item.id}')" title="删除">&times;</button>
-        <div class="gi-name">${item.result.name || '未知'}</div>
-        <div class="gi-friend">知己：${item.result.friend || '未知'}</div>
-        ${item.result.friend_stage ? `<div class="gi-friend">${item.result.friend_stage}</div>` : ''}
-        <div class="gi-date">${new Date(item.timestamp).toLocaleDateString('zh-CN')}</div>
-      </div>
-    `).join('');
+    const btn = document.querySelector('.btn-gallery');
+    if (btn) btn.style.display = history.length === 0 ? 'none' : '';
   } catch (e) { console.error('历史加载失败', e); }
 }
 
-function showHistory(data) {
-  currentResult = data;
-  document.getElementById('cardOverlay').classList.add('active');
-  renderResult(data);
-}
-
-async function deleteHistory(id) {
-  try { await fetch(`/api/history/${id}`, { method: 'DELETE' }); loadGallery(); }
-  catch (e) { console.error('删除失败', e); }
+function openGallery() {
+  window.location.href = 'gallery.html';
 }
 
 /* ── UI 辅助 ── */
+/* loading 阶段文案，模拟造像过程 */
+const LOADING_STEPS = ['正在研墨…', '构思小传…', '落笔成章…'];
+let loadingTimer = null;
+
 function setLoading(active) {
   const btn = document.getElementById('submitBtn');
   const overlay = document.getElementById('cardOverlay');
   const loading = document.getElementById('loading');
   const card = document.getElementById('overlayCard');
+  const loadingText = document.getElementById('loadingText');
   if (active) {
     btn.disabled = true;
     btn.textContent = '落笔中…';
     overlay.classList.add('active');
     loading.classList.add('active');
     card.classList.remove('active');
+    // 循环切换阶段文案，给用户进度感
+    let i = 0;
+    if (loadingText) loadingText.textContent = LOADING_STEPS[0];
+    loadingTimer = setInterval(() => {
+      i = (i + 1) % LOADING_STEPS.length;
+      if (loadingText) loadingText.textContent = LOADING_STEPS[i];
+    }, 1800);
   } else {
     btn.disabled = false;
     btn.textContent = '落笔生花';
     loading.classList.remove('active');
+    if (loadingTimer) { clearInterval(loadingTimer); loadingTimer = null; }
   }
+}
+
+function showGallery() {
+  openGallery();
 }
 
 function showError(msg) { const el = document.getElementById('errorMsg'); el.textContent = msg; el.classList.add('active'); }
 function hideError() { document.getElementById('errorMsg').classList.remove('active'); }
 
+/* ── 弹窗焦点陷阱：打开时聚焦关闭键、锁背景滚动、Tab 在弹窗内循环 ── */
+let _lastFocused = null;
+function trapFocus(overlayEl) {
+  _lastFocused = document.activeElement;
+  document.body.style.overflow = 'hidden';
+  // 聚焦到关闭按钮，让键盘用户立刻能操作
+  const closer = overlayEl.querySelector('.overlay-close, [data-close]');
+  if (closer) closer.focus();
+
+  const handler = (e) => {
+    if (e.key !== 'Tab') return;
+    const focusables = overlayEl.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const visible = Array.from(focusables).filter(el => el.offsetParent !== null);
+    if (visible.length === 0) return;
+    const first = visible[0];
+    const last = visible[visible.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  };
+  overlayEl.addEventListener('keydown', handler);
+  overlayEl._trapHandler = handler;
+}
+function releaseFocus(overlayEl) {
+  document.body.style.overflow = '';
+  if (overlayEl._trapHandler) {
+    overlayEl.removeEventListener('keydown', overlayEl._trapHandler);
+    overlayEl._trapHandler = null;
+  }
+  if (_lastFocused && _lastFocused.focus) _lastFocused.focus();
+}
+
 function closeOverlay() {
+  const overlay = document.getElementById('cardOverlay');
   document.getElementById('cardOverlay').classList.remove('active');
   document.getElementById('overlayCard').classList.remove('active');
   document.getElementById('loading').classList.remove('active');
+  releaseFocus(overlay);
 }
 
 function resetForm() {
@@ -1860,7 +2039,20 @@ function resetForm() {
 }
 
 loadPoetry();
-loadGallery();
+refreshGalleryBtn();
+
+// 若本会话已进入过主页（如从画廊返回），自动跳过欢迎页
+(function autoSkipSplash() {
+  try {
+    if (sessionStorage.getItem('entered') === '1') {
+      const splash = document.getElementById('splash');
+      splash.style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
+      startPoetryRain();
+      history.replaceState({ page: 'main' }, '', '#main');
+    }
+  } catch (e) {}
+})();
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeOverlay();
