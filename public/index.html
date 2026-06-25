@@ -1769,6 +1769,7 @@ async function generate() {
     if (!res.ok) throw new Error(data.error || '请求失败');
     currentResult = data;
     renderResult(data);
+    saveToHistory(data);
     refreshGalleryBtn();
   } catch (err) {
     // 区分网络中断与服务端错误，给出可操作的提示
@@ -1929,14 +1930,26 @@ function drawSectionLine(ctx, y, W) {
   ctx.stroke();
 }
 
-/* ── 历史画廊（独立页面，新开标签页） ── */
-async function refreshGalleryBtn() {
-  try {
-    const res = await fetch('/api/history');
-    const history = await res.json();
-    const btn = document.querySelector('.btn-gallery');
-    if (btn) btn.style.display = history.length === 0 ? 'none' : '';
-  } catch (e) { console.error('历史加载失败', e); }
+/* ── 历史画廊（localStorage） ── */
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem('ancient_history') || '[]'); } catch { return []; }
+}
+
+function saveToHistory(data) {
+  const history = getHistory();
+  history.unshift({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    timestamp: new Date().toISOString(),
+    result: data,
+  });
+  if (history.length > 100) history.length = 100;
+  localStorage.setItem('ancient_history', JSON.stringify(history));
+}
+
+function refreshGalleryBtn() {
+  const history = getHistory();
+  const btn = document.querySelector('.btn-gallery');
+  if (btn) btn.style.display = history.length === 0 ? 'none' : '';
 }
 
 function openGallery() {

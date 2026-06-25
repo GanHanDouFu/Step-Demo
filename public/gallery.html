@@ -692,17 +692,17 @@ body::before {
 let HISTORY = [];      // 全部记录
 let currentId = null;  // 当前查看详情的记录 id
 
-/* ── 加载历史 ── */
-async function loadHistory() {
-  try {
-    const res = await fetch('/api/history');
-    HISTORY = await res.json();
-    render();
-  } catch (e) {
-    console.error('加载失败', e);
-    HISTORY = [];
-    render();
-  }
+/* ── 加载历史（localStorage） ── */
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem('ancient_history') || '[]'); } catch { return []; }
+}
+function saveHistory(history) {
+  localStorage.setItem('ancient_history', JSON.stringify(history));
+}
+
+function loadHistory() {
+  HISTORY = getHistory();
+  render();
 }
 
 /* ── 渲染列表 ── */
@@ -841,26 +841,22 @@ function confirmDelete(id) {
   doDelete(id);
 }
 
-async function doDelete(id) {
-  try {
-    await fetch(`/api/history/${id}`, { method: 'DELETE' });
-    HISTORY = HISTORY.filter(h => h.id !== id);
-    if (currentId === id) closeOverlay();
-    render();
-    toast('已删除一卷');
-  } catch (e) {
-    console.error('删除失败', e);
-    toast('删除失败，请重试');
-  }
+function doDelete(id) {
+  HISTORY = HISTORY.filter(h => h.id !== id);
+  saveHistory(HISTORY);
+  if (currentId === id) closeOverlay();
+  render();
+  toast('已删除一卷');
 }
 
 /* 清空画廊 */
 document.getElementById('btnClearAll').addEventListener('click', () => {
   if (HISTORY.length === 0) return;
   if (!confirm(`确定清空全部 ${HISTORY.length} 位古人吗？此操作不可恢复。`)) return;
-  Promise.all(HISTORY.map(h => fetch(`/api/history/${h.id}`, { method: 'DELETE' })))
-    .then(() => { HISTORY = []; render(); toast('画廊已清空'); })
-    .catch(e => { console.error(e); toast('清空未完成，请重试'); });
+  HISTORY = [];
+  saveHistory(HISTORY);
+  render();
+  toast('画廊已清空');
 });
 
 /* 详情页删除按钮 */
