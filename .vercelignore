@@ -1,5 +1,5 @@
 .env
-api/index.js
+server.js
 data/
 素材/
 guizang-ppt-skill/
