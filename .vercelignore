@@ -1,4 +1,6 @@
 server.local.js
+package.json
+package-lock.json
 .env
 data/
 node_modules/
@@ -6,3 +8,5 @@ public/
 素材/
 guizang-ppt-skill/
 skills/
+README.md
+deploy.sh
