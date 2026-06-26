@@ -1,0 +1,8 @@
+server.local.js
+.env
+data/
+node_modules/
+public/
+素材/
+guizang-ppt-skill/
+skills/
