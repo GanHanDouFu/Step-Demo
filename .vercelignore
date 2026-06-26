@@ -1,6 +1,4 @@
 server.local.js
-package.json
-package-lock.json
 .env
 data/
 node_modules/
