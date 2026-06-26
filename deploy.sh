@@ -45,7 +45,7 @@ pm2 delete ancient-app 2>/dev/null || true
 
 # 启动
 echo "--- 启动服务 ---"
-pm2 start server.js --name ancient-app
+pm2 start server.local.js --name ancient-app
 pm2 save
 pm2 startup
 

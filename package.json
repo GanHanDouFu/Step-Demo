@@ -2,10 +2,10 @@
   "name": "if-i-were-ancient",
   "version": "1.0.0",
   "description": "如果我是古人 — 候鸟AI创造局参赛作品",
-  "main": "server.js",
+  "main": "server.local.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "start": "node server.local.js",
+    "dev": "node server.local.js"
   },
   "keywords": ["ai", "ancient-china", "creative"],
   "author": "",
