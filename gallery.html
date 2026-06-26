@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>古人画廊 — 如果我是古人</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&family=Noto+Serif+SC:wght@400;700&family=LXGW+WenKai&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+<link href="https://fonts.loli.net/css2?family=Zhi+Mang+Xing&family=Noto+Serif+SC:wght@400;700&family=LXGW+WenKai&display=swap" rel="stylesheet">
 <style>
 /* 墨韵流觞 — 古人画廊（复用主站视觉系统） */
 :root {
@@ -693,6 +692,11 @@ body::before {
   .gi-delete { opacity: 1; }
   .gallery-toolbar { flex-direction: column; align-items: stretch; }
   .search-box { max-width: none; }
+  .card-overlay { padding: 12px; }
+  .card-overlay-content { width: 95%; max-width: none; }
+  .overlay-card { padding: 24px 18px 18px; border-radius: 12px; }
+  .overlay-actions { flex-direction: row; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .overlay-actions .btn-action { font-size: 0.85rem; padding: 10px 14px; flex: 1; min-width: 0; white-space: nowrap; }
 }
 </style>
 </head>
@@ -1228,11 +1232,22 @@ function generateShareCard() {
   ctx.fillStyle = 'rgba(0,0,0,0.4)';
   ctx.fillText('候鸟AI创造局 · 如果我是古人', W / 2, H - 40);
 
-  // 触发下载
-  const link = document.createElement('a');
-  link.download = `古人身份-${d.name || '未知'}.png`;
-  link.href = canvas.toDataURL('image/png');
-  link.click();
+  // 触发下载（兼容移动端）
+  const dataUrl = canvas.toDataURL('image/png');
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if (isIOS) {
+    // iOS 不支持 download 属性，打开新页面让用户长按保存
+    const win = window.open();
+    if (win) {
+      win.document.write(`<img src="${dataUrl}" style="max-width:100%">`);
+      win.document.close();
+    }
+  } else {
+    const link = document.createElement('a');
+    link.download = `古人身份-${d.name || '未知'}.png`;
+    link.href = dataUrl;
+    link.click();
+  }
 }
 
 document.getElementById('btnSaveCard').addEventListener('click', generateShareCard);

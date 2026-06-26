@@ -4,9 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>如果我是古人 — 穿越千年，遇见另一个自己</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&family=Noto+Serif+SC:wght@400;700&family=LXGW+WenKai&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.loli.net" crossorigin>
+<link href="https://fonts.loli.net/css2?family=Zhi+Mang+Xing&family=Noto+Serif+SC:wght@400;700&family=LXGW+WenKai&display=swap" rel="stylesheet">
 <style>
 /* 墨韵流觞 — 如果我是古人 视觉系统 */
 :root {
@@ -490,6 +489,7 @@ textarea.form-input {
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
+  border-radius: 16px;
   animation: overlayIn 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
 }
 
@@ -879,6 +879,8 @@ textarea.form-input {
   .overlay-actions { flex-direction: row; }
   .overlay-actions .btn-action { padding: 14px 14px; }
   .friend-header { flex-direction: column; gap: 8px; }
+  .btn-submit { margin-top: 20px; }
+  .btn-gallery { margin-top: 10px; }
 }
 
 /* ── 手机 ── */
@@ -891,7 +893,8 @@ textarea.form-input {
   .select-row { gap: 10px; margin-bottom: 4px; }
   /* 手机端统一缩小按钮尺寸（改变量值，所有引用变量的按钮自动同步） */
   :root { --btn-pad: 14px; --btn-size: 1.2rem; }
-  .btn-submit, .btn-gallery { font-size: var(--btn-size); padding: var(--btn-pad); }
+  .btn-submit { font-size: var(--btn-size); padding: var(--btn-pad); margin-top: 16px; }
+  .btn-gallery { font-size: var(--btn-size); padding: var(--btn-pad); margin-top: 8px; }
   .gallery-view { padding: 24px 16px 16px; }
   .gallery-topbar { margin-bottom: 18px; }
   .gallery-grid { grid-template-columns: 1fr; gap: 10px; }
@@ -899,8 +902,8 @@ textarea.form-input {
   .gallery-item .gi-name { font-size: 1.3rem; }
   .footer { padding: 32px 0 24px; }
   .overlay-loading { padding: 40px 20px; }
-  .overlay-actions { flex-direction: column; gap: 8px; }
-  .overlay-actions .btn-action { font-size: 0.9rem; padding: 12px; }
+  .overlay-actions { flex-direction: row; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .overlay-actions .btn-action { font-size: 0.9rem; padding: 12px 16px; }
   .card-overlay-content { width: 95%; }
   .settings-toggle { width: 42px; height: 42px; font-size: 1.3rem; }
 }
